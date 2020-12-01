@@ -1,0 +1,51 @@
+menu:
+  首页: / || fas fa-home
+  标签: /tags/ || fas fa-tags
+  分类: /categories/ || fas fa-folder-open
+highlight_theme: mac light
+highlight_copy: true
+index_img: https://s3.ifanr.com/wp-content/uploads/2019/08/gundam-wallpapers-25872-6861417.jpg
+avatar:
+  img: https://avatars2.githubusercontent.com/u/19382842?s=460&u=9e357c2be10d101fe9a2f25750d3c345d9dbc968&v=4
+aside:
+  enable: true
+  hide: false
+  button: true
+  mobile: true # 手機頁面（ 顯示寬度 < 768px ）是否顯示aside內容
+  position: right # left or right
+  card_author:
+    enable: true
+    description:
+    button:
+      icon: fab fa-github
+      text: Github
+      link: https://github.com/makmav
+  card_announcement:
+    enable: true
+    content: frezze ❤
+  card_recent_post:
+    enable: true
+    limit: 5 # if set 0 will show all
+    sort: date # date or updated
+  card_categories:
+    enable: true
+    limit: 8 # if set 0 will show all
+    expand: none # none/true/false
+  card_tags:
+    enable: true
+    limit: 40 # if set 0 will show all
+    color: false
+  card_archives:
+    enable: true
+    type: monthly # yearly or monthly
+    format: MMMM YYYY # eg: YYYY年MM月
+    order: -1 # Sort of order. 1, asc for ascending; -1, desc for descending
+    limit: 8 # if set 0 will show all
+  card_webinfo:
+    enable: true
+    post_count: true
+    last_push_date: true
+footer:
+  owner:
+    enable: true
+    since: 2017
