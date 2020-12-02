@@ -1,11 +1,11 @@
 ---
 title: 装饰器的使用
 date: 2017/11/15
+cover: https://cdn.jsdelivr.net/gh/jerryc127/CDN@latest/cover/default_bg.png
 categories:
 - Ecmascript
 tags: 
 - decorate
-
 ---
 # 装饰器之助力开发
 

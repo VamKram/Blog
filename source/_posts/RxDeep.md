@@ -1,6 +1,7 @@
 ---
 title: Rx更进一步
 date: 2017/10/03
+cover: https://technologybook.tech/assets/img/rxjs.png
 categories:
 - reactive programming
 tags: 

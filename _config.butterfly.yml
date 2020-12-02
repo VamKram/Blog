@@ -4,9 +4,10 @@ menu:
   分类: /categories/ || fas fa-folder-open
 highlight_theme: mac light
 highlight_copy: true
-index_img: https://s3.ifanr.com/wp-content/uploads/2019/08/gundam-wallpapers-25872-6861417.jpg
+index_img: https://technologybook.tech/assets/img/gaoda.jpg
+default_top_img: https://technologybook.tech/assets/img/color.jpg
 avatar:
-  img: https://avatars2.githubusercontent.com/u/19382842?s=460&u=9e357c2be10d101fe9a2f25750d3c345d9dbc968&v=4
+  img: https://technologybook.tech/assets/img/lina.jpeg
 aside:
   enable: true
   hide: false

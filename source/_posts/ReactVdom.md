@@ -1,6 +1,7 @@
 ---
 title: React 系列（virtual DOM）
 date: 2017/11/19
+cover: https://technologybook.tech/assets/img/react.png
 categories:
 - react
 tags: 

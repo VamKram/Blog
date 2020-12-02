@@ -1,6 +1,7 @@
 ---
 title: Redux Middleware笔记
 date: 2017/07/19
+cover: https://technologybook.tech/assets/img/react.png
 categories:
 - redux
 tags: 

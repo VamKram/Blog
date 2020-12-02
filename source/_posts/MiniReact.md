@@ -1,6 +1,7 @@
 ---
 title: 垒积木之实现一个MiniReact
 date: 2017/12/05
+cover: https://technologybook.tech/assets/img/react.png
 categories:
 - react
 tags: 

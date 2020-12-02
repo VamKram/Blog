@@ -1,6 +1,7 @@
 ---
 title: Rxjs 总结
 date: 2017/09/09
+cover: https://technologybook.tech/assets/img/rxjs.png
 categories:
 - reactive programming
 tags: 
