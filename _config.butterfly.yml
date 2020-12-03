@@ -1,7 +1,7 @@
 menu:
-  首页: / || fas fa-home
-  标签: /tags/ || fas fa-tags
-  分类: /categories/ || fas fa-folder-open
+  home: / || fas fa-home
+  tags: /tags/ || fas fa-tags
+  categories: /categories/ || fas fa-folder-open
 highlight_theme: mac light
 highlight_copy: true
 index_img: https://technologybook.tech/assets/img/gaoda.jpg
