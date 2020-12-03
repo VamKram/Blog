@@ -3,11 +3,13 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: 'Mark's Blog'
+title: Queen
 subtitle: ''
-description: 'Nothing really matter to me'
+description: Nothing really matter to me
 keywords:
 author: Mark Ma
+favicon:
+  medium: https://technologybook.tech/assets/img/lina.jpeg 
 language: en
 timezone: ''
 # URL
