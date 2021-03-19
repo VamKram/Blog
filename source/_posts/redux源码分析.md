@@ -1,7 +1,7 @@
 ---
 title: redux 源码分析
 date: 2018/03/25
-cover: https://technologybook.tech/assets/img/r5.png
+cover: http
 categories:
 - react redux source
 tags:
@@ -17,7 +17,7 @@ tags:
 
 redux的实现是非常简洁的，本文旨在通过对源码的解读和简易实现加深对code的理解。
 
-![image-20210310235527758](https://technologybook.tech/assets/img/r5.png)
+![image-20210310235527758](http
 
 源码的目录结构非常清晰，文件名即是API的名字。
 
@@ -116,15 +116,11 @@ function compose(...funcs) {
 function pipe(...funcs) {
   return (args) => funcs.reduce((acc, cur) => cur(acc), args);
 }	
-
-// pipe(funcA, funcB, funcC)(args)
 ```
 
 以下是我用ts实现的版本
 
-```typescript
-// const store = createStore(reducer, enhancer);
-// store.dispatcher({type: string})
+```typescrip
 
 type IAction = { type: string | symbol, payload?: any }
 type IReducer<S extends object> = (state: S, action: IAction) => S;
@@ -236,4 +232,109 @@ export function combineReducers<S extends object>(reducers) {
 }
 
 ```
+### react-redux
+
+redux是框架无关的一个库，要想在react中使用就必须借助于react-redux，而结合的关键就在于 react-redux的
+connect的方法
+
+```javacript
+/**
+* mapStateToProps(state, ownProps) : stateProps
+* mapDispatchToProps(dispatch, ownProps) : dispatchProps
+*/
+connect(mapStateToProps, mapDispatchTOProps, mergeProps, options)
+```
+
+```javascript
+class Provider extends Component {
+  constructor(props) {
+    super(props)
+    const { store } = props
+    this.notifySubscribers = this.notifySubscribers.bind(this)
+    const subscription = new Subscription(store)的subscrption对象上的更新函数
+    subscription.onStateChange = this.notifySubscribers
+    this.state = {
+      store,
+      subscription
+    }
+    this.previousState = store.getState()
+  }
+
+  componentDidMount() {
+    this._isMounted = true
+
+    this.state.subscription.trySubscribe()
+
+    if (this.previousState !== this.props.store.getState()) {
+      this.state.subscription.notifyNestedSubs()
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) this.unsubscribe()
+    this.state.subscription.tryUnsubscribe()
+    this._isMounted = false
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.store !== prevProps.store) {
+      this.state.subscription.tryUnsubscribe()
+      const subscription = new Subscription(this.props.store)
+      subscription.onStateChange = this.notifySubscribers
+      this.setState({ store: this.props.store, subscription })
+    }
+  }
+
+  notifySubscribers() {
+    this.state.subscription.notifyNestedSubs()
+  }
+
+  render() {
+    const Context = this.props.context || ReactReduxContext
+    return (
+      <Context.Provider value={this.state}>
+        {this.props.children}
+      </Context.Provider>
+    )
+  }
+}
+```
+
+### 工作流程
+1. get store
+2. 使用发布订阅，notify所有的subscriber
+3. didmount阶段如果有更新重新赋值
+4. 检查store是否equal否则 重新2
+5. 传递context
+
+```javascript
+subscribe(listener) {
+      let isSubscribed = true
+      if (next === current) next = current.slice()
+      next.push(listener)
+
+      return function unsubscribe() {
+        if (!isSubscribed || current === CLEARED) return
+        isSubscribed = false
+        if (next === current) next = current.slice()
+        next.splice(next.indexOf(listener), 1)
+      }
+    }
+  }
+
+// 这里订阅的是一个 wrapper
+  trySubscribe() {
+    if (!this.unsubscribe) {
+      this.unsubscribe = this.parentSub
+        ? this.parentSub.addNestedSub(this.handleChangeWrapper)
+        : this.store.subscribe(this.handleChangeWrapper)
+      this.listeners = createListenerCollection()
+    }
+  }
+// state or dispatch =》 props
+  function selector(stateOrDispatch, ownProps) {
+  return props
+}
+```
+> 总的来说: react-redux做的就是 将provider的value放入context，connect阶段取出store获取 mapStateToProps， mapDispatchTOProps，然后通过select create props传入组件并且通过一个subscripation 订阅当前state的dependency，通过react unstable_batchUpdate 来做差量的更新
 
