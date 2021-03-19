@@ -4,7 +4,7 @@ date: 2020/02/05
 cover: https://technologybook.tech/assets/img/react.png
 categories:
 - source
-  tags:
+tags:
 - callbag
 
 ---
