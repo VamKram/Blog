@@ -1,12 +1,14 @@
 ---
 title: callbag二三事
-date: 2020/01/15
-cover: https://loreanvictor.github.io/callbag-jsx/docs/assets/callbag-jsx.svg
+date: 2020/02/05
+cover: https://technologybook.tech/assets/img/react.png
 categories:
-- Reactive
+- source
   tags:
-- callbug
+- callbag
+
 ---
+
 # callbag 源码分析
 
 > Your focus determines your reality.
