@@ -12,7 +12,7 @@ tags:
 
 ## 从http开始
 
-关于http的文章可以看之前写的  -> [这个](https://technologybook.tech/2020/03/15/httpNhttps/)
+关于http的文章可以看之前写的  -> [这个](https://technologybook.tech/2019/05/15/httpNhttps/)
 
 ## 到node http 模块
 
