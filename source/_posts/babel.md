@@ -50,7 +50,7 @@ module.exports = ({types: t}) => {
 
 假设我们有一个树状结构：
 
-![image-20210321210154324](/https://technologybook.tech/assets/img/ast.png)
+![image-20210321210154324](https://technologybook.tech/assets/img/ast.png)
 
 上面的AST是一个简单的sayHi函数产出的结果。
 
