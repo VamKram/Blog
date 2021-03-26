@@ -1,4 +1,4 @@
-title: Typescript Template Literal Types
+title: webcomponent
 date: 2020/01/28
 cover: https://technologybook.tech/assets/img/wc.png
 categories:

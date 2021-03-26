@@ -1,4 +1,4 @@
-title: Typescript Template Literal Types
+title: Html5 WebSocket
 date: 2019/11/21
 categories:
 - html
