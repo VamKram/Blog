@@ -1,4 +1,4 @@
-title: Typescript Template Literal Types
+title: This 
 date: 2017/01/12
 categories:
 - js
