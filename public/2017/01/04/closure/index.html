@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="closure &amp;&amp; object.create闭包就是能够读取其他函数内部变量的函数f2可以使用f1中的参数当f1的返回值为f2时 外部函数可以调用内部的参数这就形成了一个闭包。 123456789function f1()&amp;#123;　　　　var n&#x3D;999;　　　　function f2()&amp;#123;　　　　　　alert(n); 　　　　&amp;#125;　　　　return">
+<meta property="og:type" content="article">
+<meta property="og:title" content="closure &amp;&amp; object.create">
+<meta property="og:url" content="https://technologybook.tech/2017/01/04/closure/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="closure &amp;&amp; object.create闭包就是能够读取其他函数内部变量的函数f2可以使用f1中的参数当f1的返回值为f2时 外部函数可以调用内部的参数这就形成了一个闭包。 123456789function f1()&amp;#123;　　　　var n&#x3D;999;　　　　function f2()&amp;#123;　　　　　　alert(n); 　　　　&amp;#125;　　　　return">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-01-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.877Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>closure &amp;&amp; object.create</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/01/12/this/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/01/04/closure/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/01/04/closure/&text=closure &amp;&amp; object.create"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/01/04/closure/&is_video=false&description=closure &amp;&amp; object.create"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=closure &amp;&amp; object.create&body=Check out this article: https://technologybook.tech/2017/01/04/closure/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/01/04/closure/&name=closure &amp;&amp; object.create&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/01/04/closure/&t=closure &amp;&amp; object.create"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#closure-object-create"><span class="toc-number">1.</span> <span class="toc-text">closure &amp;&amp; object.create</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E5%B0%B1%E6%98%AF%E8%83%BD%E5%A4%9F%E8%AF%BB%E5%8F%96%E5%85%B6%E4%BB%96%E5%87%BD%E6%95%B0%E5%86%85%E9%83%A8%E5%8F%98%E9%87%8F%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-number">1.0.1.</span> <span class="toc-text">闭包就是能够读取其他函数内部变量的函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E7%9A%84%E7%94%A8%E5%A4%84"><span class="toc-number">1.0.2.</span> <span class="toc-text">闭包的用处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%97%AD%E5%8C%85%E7%9A%84%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">1.0.3.</span> <span class="toc-text">使用闭包的注意点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#object-create"><span class="toc-number">1.1.</span> <span class="toc-text">object.create</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call-apply-bind"><span class="toc-number">1.2.</span> <span class="toc-text">call apply bind</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        closure &amp;&amp; object.create
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-01-03T16:00:00.000Z" class="dt-published" itemprop="datePublished">2017-01-04</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/js/">js</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/js/" rel="tag">js</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="closure-object-create"><a href="#closure-object-create" class="headerlink" title="closure &amp;&amp; object.create"></a>closure &amp;&amp; object.create</h1><h3 id="闭包就是能够读取其他函数内部变量的函数"><a href="#闭包就是能够读取其他函数内部变量的函数" class="headerlink" title="闭包就是能够读取其他函数内部变量的函数"></a>闭包就是能够读取其他函数内部变量的函数</h3><p><strong>f2可以使用f1中的参数当f1的返回值为f2时 外部函数可以调用内部的参数这就形成了一个闭包。</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">f1</span>(<span class="params"></span>)&#123;</span><br><span class="line">　　　　<span class="keyword">var</span> n=<span class="number">999</span>;</span><br><span class="line">　　　　<span class="keyword">function</span> <span class="title function_">f2</span>(<span class="params"></span>)&#123;</span><br><span class="line">　　　　　　<span class="title function_">alert</span>(n); </span><br><span class="line">　　　　&#125;</span><br><span class="line">　　　　<span class="keyword">return</span> f2;</span><br><span class="line">　　&#125;</span><br><span class="line">　　<span class="keyword">var</span> result=<span class="title function_">f1</span>();</span><br><span class="line">　　<span class="title function_">result</span>(); <span class="comment">// 999</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="闭包的用处"><a href="#闭包的用处" class="headerlink" title="闭包的用处"></a>闭包的用处</h3><blockquote>
+<p>可以读取函数内部的变量，<br>让这些变量的值始终保持在内存中。(通常情况下应用完销毁)</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">f1</span> () &#123;</span><br><span class="line">        <span class="keyword">var</span> n = <span class="number">5</span>;</span><br><span class="line">        add = <span class="keyword">function</span>(<span class="params"></span>)&#123;n+=<span class="number">1</span>&#125;</span><br><span class="line">         <span class="keyword">function</span> <span class="title function_">f3</span>(<span class="params"></span>)&#123;</span><br><span class="line">            <span class="title function_">alert</span>(n);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> f3;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> f2 = <span class="title function_">f1</span>();</span><br><span class="line">    <span class="title function_">f2</span>();  <span class="comment">// 5</span></span><br><span class="line">    <span class="title function_">add</span>(); <span class="comment">// +1</span></span><br><span class="line">    <span class="title function_">f2</span>(); <span class="comment">// 6 内存中的n没有被销毁</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用闭包的注意点"><a href="#使用闭包的注意点" class="headerlink" title="使用闭包的注意点"></a>使用闭包的注意点</h3><blockquote>
+<p>由于闭包会使得函数中的<strong>变量都被保存在内存中</strong>，<strong>内存消耗很大</strong>，所以不能滥用闭包，否则会造成网页的性能问题，在IE中可能导致内存泄露。解决方法是，<strong>在退出函数之前，将不使用的局部变量全部删除</strong>。<br><em>(不清除内存)</em><br>闭包会在父函数外部，<strong>改变父函数内部变量的值</strong>。所以，如果你把父函数当作对象（object）使用，把闭包当作它的公用方法（Public Method），把内部变量当作它的私有属性（private value），这时一定要小心，不要随便改变父函数内部变量的值。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">　　<span class="keyword">var</span> name = <span class="string">&quot;The Window&quot;</span>;</span><br><span class="line">　　<span class="keyword">var</span> object = &#123;</span><br><span class="line">　　　　name : <span class="string">&quot;My Object&quot;</span>,</span><br><span class="line">　　　　getNameFunc : <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">　　　　　　<span class="keyword">return</span> <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">　　　　　　　　<span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">name</span>;</span><br><span class="line">　　　　　　&#125;;</span><br><span class="line">　　　　&#125;</span><br><span class="line">　　&#125;;</span><br><span class="line">　　<span class="title function_">alert</span>(object.<span class="title function_">getNameFunc</span>()());</span><br><span class="line">　　————————————————</span><br><span class="line">　　<span class="keyword">var</span> name = <span class="string">&quot;The Window&quot;</span>;</span><br><span class="line">　　<span class="keyword">var</span> object = &#123;</span><br><span class="line">　　　　name : <span class="string">&quot;My Object&quot;</span>,</span><br><span class="line">　　　　getNameFunc : <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">　　　　　　<span class="keyword">var</span> that = <span class="variable language_">this</span>;</span><br><span class="line">　　　　　　<span class="keyword">return</span> <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">　　　　　　　　<span class="keyword">return</span> that.<span class="property">name</span>;</span><br><span class="line">　　　　　　&#125;;</span><br><span class="line">　　　　&#125;</span><br><span class="line">　　&#125;;</span><br><span class="line">　　<span class="title function_">alert</span>(object.<span class="title function_">getNameFunc</span>()());</span><br></pre></td></tr></table></figure>
+
+<h2 id="object-create"><a href="#object-create" class="headerlink" title="object.create"></a>object.create</h2><p>1，定值为null 创建不带原型对象<br>2，创建带属性带原型的对象</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pt = &#123;</span><br><span class="line">        say : <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;saying!&#x27;</span>);    </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> o3 = <span class="title class_">Object</span>.<span class="title function_">create</span>(pt, &#123;</span><br><span class="line">        <span class="attr">size</span>: &#123;</span><br><span class="line">            <span class="attr">value</span>: <span class="string">&quot;large&quot;</span>,</span><br><span class="line">            <span class="attr">enumerable</span>: <span class="literal">true</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">shape</span>: &#123;</span><br><span class="line">            <span class="attr">value</span>: <span class="string">&quot;round&quot;</span>,</span><br><span class="line">            <span class="attr">enumerable</span>: <span class="literal">true</span></span><br><span class="line">        &#125;    </span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(o3.<span class="property">size</span>);    <span class="comment">// large</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(o3.<span class="property">shape</span>);     <span class="comment">// round</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Object</span>.<span class="title function_">getPrototypeOf</span>(o3));     <span class="comment">// &#123;say:...&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>3，实现继承</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Shape - superclass</span></span><br><span class="line">        <span class="keyword">function</span> <span class="title function_">Shape</span>(<span class="params"></span>) &#123;</span><br><span class="line">          <span class="variable language_">this</span>.<span class="property">x</span> = <span class="number">0</span>;</span><br><span class="line">          <span class="variable language_">this</span>.<span class="property">y</span> = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Shape</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">move</span> = <span class="keyword">function</span>(<span class="params">x, y</span>) &#123;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">x</span> += x;</span><br><span class="line">            <span class="variable language_">this</span>.<span class="property">y</span> += y;</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;Shape moved.&quot;</span>);</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Rectangle - subclass</span></span><br><span class="line">        <span class="keyword">function</span> <span class="title function_">Rectangle</span>(<span class="params"></span>) &#123;</span><br><span class="line">          <span class="title class_">Shape</span>.<span class="title function_">call</span>(<span class="variable language_">this</span>); <span class="comment">//call super constructor.继承属性</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title class_">Rectangle</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="title class_">Shape</span>.<span class="property"><span class="keyword">prototype</span></span>);<span class="comment">//继承方法</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> rect = <span class="keyword">new</span> <span class="title class_">Rectangle</span>();</span><br><span class="line"></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(rect <span class="keyword">instanceof</span> <span class="title class_">Rectangle</span>); <span class="comment">//true.</span></span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(rect <span class="keyword">instanceof</span> <span class="title class_">Shape</span>); <span class="comment">//true.</span></span><br><span class="line"></span><br><span class="line">        rect.<span class="title function_">move</span>(); <span class="comment">//&quot;Shape moved.&quot;</span></span><br><span class="line">        <span class="comment">//new object（）没有父类 使用其构造方法和属性</span></span><br><span class="line">        <span class="comment">//Object.create（）指向原型 （父子关系）</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="call-apply-bind"><a href="#call-apply-bind" class="headerlink" title="call apply bind"></a>call apply bind</h2><p>1，将参数传递给apple</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">banana = &#123;</span><br><span class="line">    <span class="attr">color</span>: <span class="string">&quot;yellow&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">apple.<span class="property">say</span>.<span class="title function_">call</span>(banana);     <span class="comment">//My color is yellow</span></span><br><span class="line">apple.<span class="property">say</span>.<span class="title function_">apply</span>(banana);    <span class="comment">//My color is yellow</span></span><br></pre></td></tr></table></figure>
+
+<p>2，</p>
+<blockquote>
+<p>某个函数的参数数量是不固定的，因此要说适用条件的话，当你的参数是明确知道数量时用 call 。<br>不确定的时候用 apply，然后把参数 push 进数组传递进去。当参数数量不确定时，函数内部也可以通过 arguments 这个数组来遍历所有的参数。<br>如果第一个参数为null，函数体内的this指向宿主对象，在浏览器中是window</p>
+</blockquote>
+<p>结构 fn.prototype.apply(this,arguments)<br><em>arguments是this中的参数 再传入fn中。fn.prototype.apply(this—&gt;argument)</em><br>3，<strong>bind</strong><br><strong>bind()方法会创建一个新函数</strong>，称为<strong>绑定函数</strong>，当调用这个绑定函数时，绑定函数会以创建它时传入 <strong>bind()方法的第一个参数作为 this</strong>，<strong>传入 bind() 方法的第二个以及以后的参数加上绑定函数运行时本身的参数按照顺序作为原函数的参数来调用原函数。</strong><br><em>多次 bind() 是无效的。</em></p>
+<blockquote>
+<p>apply 、 call 、bind 三者都是用来改变函数的this对象的指向的；<br>apply 、 call 、bind 三者第一个参数都是this要指向的对象，也就是想指定的上下文；<br>apply 、 call 、bind 三者都可以利用后续参数传参；<br>bind 是返回对应函数，便于稍后调用；apply 、call 则是立即调用 。</p>
+</blockquote>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#closure-object-create"><span class="toc-number">1.</span> <span class="toc-text">closure &amp;&amp; object.create</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E5%B0%B1%E6%98%AF%E8%83%BD%E5%A4%9F%E8%AF%BB%E5%8F%96%E5%85%B6%E4%BB%96%E5%87%BD%E6%95%B0%E5%86%85%E9%83%A8%E5%8F%98%E9%87%8F%E7%9A%84%E5%87%BD%E6%95%B0"><span class="toc-number">1.0.1.</span> <span class="toc-text">闭包就是能够读取其他函数内部变量的函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AD%E5%8C%85%E7%9A%84%E7%94%A8%E5%A4%84"><span class="toc-number">1.0.2.</span> <span class="toc-text">闭包的用处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%97%AD%E5%8C%85%E7%9A%84%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">1.0.3.</span> <span class="toc-text">使用闭包的注意点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#object-create"><span class="toc-number">1.1.</span> <span class="toc-text">object.create</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#call-apply-bind"><span class="toc-number">1.2.</span> <span class="toc-text">call apply bind</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/01/04/closure/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/01/04/closure/&text=closure &amp;&amp; object.create"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/01/04/closure/&is_video=false&description=closure &amp;&amp; object.create"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=closure &amp;&amp; object.create&body=Check out this article: https://technologybook.tech/2017/01/04/closure/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/01/04/closure/&title=closure &amp;&amp; object.create"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/01/04/closure/&name=closure &amp;&amp; object.create&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/01/04/closure/&t=closure &amp;&amp; object.create"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

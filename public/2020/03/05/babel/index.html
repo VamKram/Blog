@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="babel自用笔记关于抽象语法树的可以看这个之前写blog。Babel 的处理步骤Babel 解析（parse），转换（transform），生成（generate）三个步骤 。  Visitors  关于访问者模式.的介绍。 访问者是一种行为设计模式， 允许你在不修改已有代码的情况下向已有类层次结构中增加新的行为。  这是一个简单的例子，是数字111转变为string 123。 12345678">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Babel自用笔记">
+<meta property="og:url" content="https://technologybook.tech/2020/03/05/babel/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="babel自用笔记关于抽象语法树的可以看这个之前写blog。Babel 的处理步骤Babel 解析（parse），转换（transform），生成（generate）三个步骤 。  Visitors  关于访问者模式.的介绍。 访问者是一种行为设计模式， 允许你在不修改已有代码的情况下向已有类层次结构中增加新的行为。  这是一个简单的例子，是数字111转变为string 123。 12345678">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://technologybook.tech/assets/img/ast3.png">
+<meta property="og:image" content="https://technologybook.tech/assets/img/ast.png">
+<meta property="article:published_time" content="2020-03-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.877Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="babel">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://technologybook.tech/assets/img/ast3.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Babel自用笔记</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2020/11/12/template%20string/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2020/02/05/callbag/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2020/03/05/babel/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2020/03/05/babel/&text=Babel自用笔记"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2020/03/05/babel/&is_video=false&description=Babel自用笔记"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Babel自用笔记&body=Check out this article: https://technologybook.tech/2020/03/05/babel/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2020/03/05/babel/&name=Babel自用笔记&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2020/03/05/babel/&t=Babel自用笔记"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#babel%E8%87%AA%E7%94%A8%E7%AC%94%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">babel自用笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E7%9A%84%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%BF%99%E4%B8%AA%E4%B9%8B%E5%89%8D%E5%86%99blog%E3%80%82"><span class="toc-number">1.0.1.</span> <span class="toc-text">关于抽象语法树的可以看这个之前写blog。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Babel-%E7%9A%84%E5%A4%84%E7%90%86%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.1.</span> <span class="toc-text">Babel 的处理步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Visitors"><span class="toc-number">1.1.1.</span> <span class="toc-text">Visitors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Paths"><span class="toc-number">1.1.2.</span> <span class="toc-text">Paths</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Scopes"><span class="toc-number">1.1.3.</span> <span class="toc-text">Scopes</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A5%E4%B8%8B%E6%98%AF%E7%BC%96%E5%86%99%E6%8F%92%E4%BB%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0"><span class="toc-number">1.2.</span> <span class="toc-text">以下是编写插件的一些笔记</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Babel自用笔记
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2020-03-04T16:00:00.000Z" class="dt-published" itemprop="datePublished">2020-03-05</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/compiler/">compiler</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/babel/" rel="tag">babel</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="babel自用笔记"><a href="#babel自用笔记" class="headerlink" title="babel自用笔记"></a>babel自用笔记</h1><h3 id="关于抽象语法树的可以看这个之前写blog。"><a href="#关于抽象语法树的可以看这个之前写blog。" class="headerlink" title="关于抽象语法树的可以看这个之前写blog。"></a>关于抽象语法树的可以看这个<a href="https://technologybook.tech/2020/01/02/ast/">之前写blog</a>。</h3><h2 id="Babel-的处理步骤"><a href="#Babel-的处理步骤" class="headerlink" title="Babel 的处理步骤"></a>Babel 的处理步骤</h2><p>Babel <strong>解析（parse）</strong>，<strong>转换（transform）</strong>，<strong>生成（generate）</strong>三个步骤 。</p>
+<p><img src="https://technologybook.tech/assets/img/ast3.png"></p>
+<h3 id="Visitors"><a href="#Visitors" class="headerlink" title="Visitors"></a>Visitors</h3><blockquote>
+<p> 关于<a target="_blank" rel="noopener" href="https://refactoringguru.cn/design-patterns/visitor/typescript/example">访问者模式</a>.的介绍。</p>
+<p><strong>访问者</strong>是一种行为设计模式， 允许你在不修改已有代码的情况下向已有类层次结构中增加新的行为。</p>
+</blockquote>
+<p>这是一个简单的例子，是数字111转变为string 123。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = <span class="function">(<span class="params">&#123;types: t&#125;</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> &#123;</span><br><span class="line">    <span class="attr">visitor</span>: &#123;</span><br><span class="line">      <span class="title class_">NumericLiteral</span> (path) &#123;</span><br><span class="line">        fs.<span class="title function_">writeFileSync</span>(<span class="string">&#x27;./t.json&#x27;</span>, <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(path.<span class="property">node</span>, <span class="number">2</span>))</span><br><span class="line">        <span class="keyword">if</span> (path.<span class="property">node</span>.<span class="property">value</span> === <span class="number">111</span>) &#123;</span><br><span class="line">          path.<span class="title function_">replaceWith</span>(t.<span class="title function_">stringLiteral</span>(<span class="string">&#x27;123&#x27;</span>))</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这是一个访问者，在遍历中时，如果遇到一个 NumericLiteral 即数字的时候会调用 NumericLiteral()&#96; 方法。</p>
+<p>这些调用都发生在<strong>进入</strong>节点时，不过有时候我们也可以在<strong>退出</strong>时调用访问者方法。.</p>
+<p>假设我们有一个树状结构：</p>
+<p><img src="https://technologybook.tech/assets/img/ast.png" alt="image-20210321210154324"></p>
+<p>上面的AST是一个简单的sayHi函数产出的结果。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">sayHi</span>(<span class="params"></span>) &#123;</span><br><span class="line">	<span class="keyword">var</span> hi = <span class="string">&quot;hi!&quot;</span>;</span><br><span class="line">	<span class="variable language_">console</span>.<span class="title function_">log</span>(hi)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Paths"><a href="#Paths" class="headerlink" title="Paths"></a>Paths</h3><p>从上可以看出AST 的结构节点都异常复杂，节点之间的互相关联关系可以通过Path-一个简便的快速查找节点的方式来进行查找。.</p>
+<p><strong>Path</strong> 是表示两个节点之间连接的对象。</p>
+<p>例如，这是path.node包含的信息︰</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;NumericLiteral&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="number">11</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="number">14</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;loc&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">10</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">13</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;extra&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;rawValue&quot;</span><span class="punctuation">:</span> <span class="number">111</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;raw&quot;</span><span class="punctuation">:</span> <span class="string">&quot;111&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span> <span class="number">111</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>如果整体的话：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;VariableDeclarator&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="number">7</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="number">14</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;loc&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">6</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">13</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Identifier&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="number">7</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="number">8</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;loc&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">6</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">7</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;identifierName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;a&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;a&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;init&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;NumericLiteral&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="number">11</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="number">14</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;loc&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;start&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">10</span></span><br><span class="line">      <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;end&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">        <span class="attr">&quot;line&quot;</span><span class="punctuation">:</span> <span class="number">2</span><span class="punctuation">,</span></span><br><span class="line">        <span class="attr">&quot;column&quot;</span><span class="punctuation">:</span> <span class="number">13</span></span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;extra&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;rawValue&quot;</span><span class="punctuation">:</span> <span class="number">111</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;raw&quot;</span><span class="punctuation">:</span> <span class="string">&quot;111&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;value&quot;</span><span class="punctuation">:</span> <span class="number">111</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>当然路径对象还包含增删改查节点的方法。</p>
+<h3 id="Scopes"><a href="#Scopes" class="headerlink" title="Scopes"></a>Scopes</h3><p>这里指 JavaScript 支持<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scoping_vs._dynamic_scoping">词法作用域</a>，通过tree的嵌套关系来确定作用域。</p>
+<p>一个例子:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">outFun2</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> inVariable = <span class="string">&quot;inner&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_">outFun2</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(inVariable); <span class="comment">// Uncaught ReferenceError: inVariable is not defined</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在babel插件编写的过程中对作用域的使用如下。</p>
+<p>作用域会被用到的字段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  path: path,</span><br><span class="line">  block: path.node,</span><br><span class="line">  bindings: [...]</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当你创建一个新的作用域时，需要给出它的路径和父作用域，之后在遍历过程中它会在该作用域内收集所有的引用(“绑定”)。</p>
+<p>一旦引用收集完毕，你就可以在作用域（Scopes）上使用各种方法，稍后我们会了解这些方法。</p>
+<h2 id="以下是编写插件的一些笔记"><a href="#以下是编写插件的一些笔记" class="headerlink" title="以下是编写插件的一些笔记"></a>以下是编写插件的一些笔记</h2><table>
+<thead>
+<tr>
+<th align="left">功能</th>
+<th>BinaryExpression</th>
+<th>field</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Salad</td>
+<td>BinaryExpression</td>
+<td>left&#x2F;right (path.node.left &#x3D; t.identifier(“hi”);)</td>
+</tr>
+<tr>
+<td align="left">对当前对象的赋值</td>
+<td>path[x]</td>
+<td>path[x] &#x3D; n</td>
+</tr>
+<tr>
+<td align="left">对字段的check</td>
+<td>t.is.x(path.node.y, { attr: z })</td>
+<td>y is x ? y.attr&#x3D;&#x3D;&#x3D; z ? True : false</td>
+</tr>
+<tr>
+<td align="left">查找最接近的父函数</td>
+<td>path.getFunctionParent</td>
+<td>path.getStatementParent 一直向上</td>
+</tr>
+<tr>
+<td align="left">替换节点</td>
+<td>path.replaceWith&#x2F;path.replaceWithMultiple</td>
+<td>path.replaceWith常用</td>
+</tr>
+<tr>
+<td align="left">直接替换代码</td>
+<td>replaceWithSourceString</td>
+<td>一把梭</td>
+</tr>
+<tr>
+<td align="left">插入前后</td>
+<td>insertBefore&#x2F;insertAfter</td>
+<td>插入</td>
+</tr>
+<tr>
+<td align="left">插入程序content中</td>
+<td>unshiftContainer&#x2F;pushContainer</td>
+<td>较常用</td>
+</tr>
+<tr>
+<td align="left">删除节点</td>
+<td>remove</td>
+<td>remove</td>
+</tr>
+<tr>
+<td align="left">本地变量是否绑定</td>
+<td>path.scope.hasBinding&#x2F;hasOwnBinding</td>
+<td>常用来检查scope body</td>
+</tr>
+<tr>
+<td align="left">推送VariableDeclaration</td>
+<td>push({ id： string, init: path.node });</td>
+<td>不常用</td>
+</tr>
+<tr>
+<td align="left">rename</td>
+<td>path.scope.rename</td>
+<td>常用</td>
+</tr>
+<tr>
+<td align="left">抛错</td>
+<td>throw path.buildCodeFrameError</td>
+<td></td>
+</tr>
+<tr>
+<td align="left">遍历path</td>
+<td>path.traverse</td>
+<td>尽量少用用 path[x] or path.get替代</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#babel%E8%87%AA%E7%94%A8%E7%AC%94%E8%AE%B0"><span class="toc-number">1.</span> <span class="toc-text">babel自用笔记</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E6%8A%BD%E8%B1%A1%E8%AF%AD%E6%B3%95%E6%A0%91%E7%9A%84%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%BF%99%E4%B8%AA%E4%B9%8B%E5%89%8D%E5%86%99blog%E3%80%82"><span class="toc-number">1.0.1.</span> <span class="toc-text">关于抽象语法树的可以看这个之前写blog。</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Babel-%E7%9A%84%E5%A4%84%E7%90%86%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.1.</span> <span class="toc-text">Babel 的处理步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Visitors"><span class="toc-number">1.1.1.</span> <span class="toc-text">Visitors</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Paths"><span class="toc-number">1.1.2.</span> <span class="toc-text">Paths</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Scopes"><span class="toc-number">1.1.3.</span> <span class="toc-text">Scopes</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A5%E4%B8%8B%E6%98%AF%E7%BC%96%E5%86%99%E6%8F%92%E4%BB%B6%E7%9A%84%E4%B8%80%E4%BA%9B%E7%AC%94%E8%AE%B0"><span class="toc-number">1.2.</span> <span class="toc-text">以下是编写插件的一些笔记</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2020/03/05/babel/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2020/03/05/babel/&text=Babel自用笔记"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2020/03/05/babel/&is_video=false&description=Babel自用笔记"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Babel自用笔记&body=Check out this article: https://technologybook.tech/2020/03/05/babel/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2020/03/05/babel/&title=Babel自用笔记"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2020/03/05/babel/&name=Babel自用笔记&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2020/03/05/babel/&t=Babel自用笔记"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

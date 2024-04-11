@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Webpack KING！！ (一)source mapwebpack 中的几种不同的模式    devtool performance production quality comment    (none) build: fastest  rebuild: fastest yes bundle Recommended choice for production builds with maxi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webpack KING！！ (一)">
+<meta property="og:url" content="https://technologybook.tech/2019/08/15/webpack/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="Webpack KING！！ (一)source mapwebpack 中的几种不同的模式    devtool performance production quality comment    (none) build: fastest  rebuild: fastest yes bundle Recommended choice for production builds with maxi">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-08-14T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.879Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="webpack">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Webpack KING！！ (一)</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/09/17/webpack3/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/08/15/webpack2/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/08/15/webpack/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/08/15/webpack/&text=Webpack KING！！ (一)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/08/15/webpack/&is_video=false&description=Webpack KING！！ (一)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Webpack KING！！ (一)&body=Check out this article: https://technologybook.tech/2019/08/15/webpack/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/08/15/webpack/&name=Webpack KING！！ (一)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/08/15/webpack/&t=Webpack KING！！ (一)"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Webpack-KING%EF%BC%81%EF%BC%81-%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">Webpack KING！！ (一)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#source-map"><span class="toc-number">1.1.</span> <span class="toc-text">source map</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%82%B9"><span class="toc-number">1.1.1.</span> <span class="toc-text">优化点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tree-shaking"><span class="toc-number">1.1.2.</span> <span class="toc-text">tree shaking</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#scope-hosting"><span class="toc-number">1.1.3.</span> <span class="toc-text">scope hosting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Optimization"><span class="toc-number">1.1.4.</span> <span class="toc-text">Optimization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-minimize"><span class="toc-number">1.2.</span> <span class="toc-text">optimization.minimize</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-removeEmptyChunks"><span class="toc-number">1.3.</span> <span class="toc-text">optimization.removeEmptyChunks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-mergeDuplicateChunks"><span class="toc-number">1.4.</span> <span class="toc-text">optimization.mergeDuplicateChunks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-providedExports"><span class="toc-number">1.5.</span> <span class="toc-text">optimization.providedExports</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%87%92%E5%8A%A0%E8%BD%BD"><span class="toc-number">1.5.1.</span> <span class="toc-text">懒加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dynamic-import-%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.2.</span> <span class="toc-text">dynamic import 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%83%AD%E6%9B%B4%E6%96%B0%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.3.</span> <span class="toc-text">热更新原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-number">1.5.4.</span> <span class="toc-text">完整流程</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Webpack KING！！ (一)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-08-14T16:00:00.000Z" class="dt-published" itemprop="datePublished">2019-08-15</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/tool/">tool</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/webpack/" rel="tag">webpack</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Webpack-KING！！-一"><a href="#Webpack-KING！！-一" class="headerlink" title="Webpack KING！！ (一)"></a>Webpack KING！！ (一)</h1><h2 id="source-map"><a href="#source-map" class="headerlink" title="source map"></a>source map</h2><p>webpack 中的几种不同的模式</p>
+<table>
+<thead>
+<tr>
+<th align="left">devtool</th>
+<th align="left">performance</th>
+<th align="left">production</th>
+<th align="left">quality</th>
+<th align="left">comment</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">(none)</td>
+<td align="left"><strong>build</strong>: fastest  <strong>rebuild</strong>: fastest</td>
+<td align="left">yes</td>
+<td align="left">bundle</td>
+<td align="left">Recommended choice for production builds with maximum performance.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>eval</code></strong></td>
+<td align="left"><strong>build</strong>: fast  <strong>rebuild</strong>: fastest</td>
+<td align="left">no</td>
+<td align="left">generated</td>
+<td align="left">Recommended choice for development builds with maximum performance.</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><strong><code>eval-source-map</code></strong></td>
+<td align="left"><strong>build</strong>: slowest  <strong>rebuild</strong>: ok</td>
+<td align="left">no</td>
+<td align="left">original</td>
+<td align="left">Recommended choice for development builds with high quality SourceMaps.</td>
+</tr>
+<tr>
+<td align="left"><code>cheap-source-map</code></td>
+<td align="left"><strong>build</strong>: ok  <strong>rebuild</strong>: slow</td>
+<td align="left">no</td>
+<td align="left">transformed</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><code>cheap-module-source-map</code></td>
+<td align="left"><strong>build</strong>: slow  <strong>rebuild</strong>: slow</td>
+<td align="left">no</td>
+<td align="left">original lines</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left"><strong><code>source-map</code></strong></td>
+<td align="left"><strong>build</strong>: slowest  <strong>rebuild</strong>: slowest</td>
+<td align="left">yes</td>
+<td align="left">original</td>
+<td align="left">Recommended choice for production builds with high quality SourceMaps.</td>
+</tr>
+</tbody></table>
+<p>resolve</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">resolve<span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">modules<span class="punctuation">:</span> <span class="punctuation">[</span>path.resolve(&#x27;node_modules&#x27;)<span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">alias<span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line"><span class="attr">&quot;@&quot;</span><span class="punctuation">:</span> <span class="string">&quot;./&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">extensions<span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;.js&quot;</span><span class="punctuation">,</span> <span class="string">&quot;.css&quot;</span><span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="优化点"><a href="#优化点" class="headerlink" title="优化点"></a>优化点</h3><p>module.noParse</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RegExp` `[RegExp]` `function(resource)` `string` `[string]</span><br></pre></td></tr></table></figure>
+
+<p>防止 webpack 解析那些任何与给定正则表达式相匹配的文件。忽略的文件中 <strong>不应该含有</strong> <code>import</code>, <code>require</code>, <code>define</code> 的调用，或任何其他导入机制。忽略大型的 library 可以提高构建性能。</p>
+<p><strong>include&#x2F;exclude</strong></p>
+<p>引入符合以下任何条件的模块。如果你提供了 <code>Rule.include</code> 选项，就不能再提供 <code>Rule.resource</code>。</p>
+<p>排除所有符合条件的模块。如果你提供了 <code>Rule.exclude</code> 选项，就不能再提供 <code>Rule.resource</code></p>
+<p><strong>webpack.IgnorePlugin()</strong></p>
+<ul>
+<li><code>resourceRegExp</code>: A RegExp to test the resource against.</li>
+<li><code>contextRegExp</code>: (optional) A RegExp to test the context (directory) against.</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> webpack.<span class="title class_">IgnorePlugin</span>(&#123; resourceRegExp, contextRegExp &#125;);</span><br><span class="line"><span class="comment">// Supported in webpack 4 and earlier, unsupported in webpack 5:</span></span><br><span class="line"><span class="keyword">new</span> webpack.<span class="title class_">IgnorePlugin</span>(resourceRegExp, [contextRegExp]);</span><br></pre></td></tr></table></figure>
+
+<p><strong>DLLPlugin</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">entry</span>: &#123;</span><br><span class="line">    <span class="attr">react</span>: [<span class="string">&#x27;react&#x27;</span>, <span class="string">&#x27;react-dom&#x27;</span>]</span><br><span class="line">  &#125;,</span><br><span class="line">    <span class="attr">output</span>: &#123;</span><br><span class="line">      <span class="attr">filename</span>: <span class="string">&#x27;[name].js&#x27;</span>,</span><br><span class="line">      <span class="attr">path</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;build&#x27;</span>),</span><br><span class="line">      <span class="attr">library</span>: <span class="string">&#x27;[name]&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">      <span class="attr">plugins</span>: [</span><br><span class="line">        <span class="keyword">new</span> webpack.<span class="title class_">DllPlugin</span>(&#123;</span><br><span class="line">          <span class="attr">name</span>: <span class="string">&#x27;[name]&#x27;</span>,</span><br><span class="line">          <span class="attr">path</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;build&#x27;</span>, <span class="string">&#x27;manifest.json&#x27;</span>)</span><br><span class="line">        &#125;)</span><br><span class="line">      ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">----</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">DLLReferencePlugins</span>(&#123;</span><br><span class="line">  <span class="attr">manifest</span>: path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;build&#x27;</span>, <span class="string">&#x27;manifest.json&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>happyPack</strong></p>
+<blockquote>
+<p>多线程打包</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">use</span>: <span class="string">&#x27;Happypack/loader?id=optmize&#x27;</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">HappyPack</span>(&#123;</span><br><span class="line">&#123;<span class="attr">id</span>: <span class="string">&#x27;optmize&#x27;</span>&#125;,</span><br><span class="line"><span class="attr">use</span>: [</span><br><span class="line">&#123;</span><br><span class="line"><span class="attr">loader</span>: <span class="string">&#x27;babel-loader&#x27;</span>,</span><br><span class="line"><span class="attr">options</span>: &#123;</span><br><span class="line"><span class="attr">presets</span>: [</span><br><span class="line"><span class="string">&#x27;@babel/preset-env&#x27;</span></span><br><span class="line">]</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="tree-shaking"><a href="#tree-shaking" class="headerlink" title="tree shaking"></a>tree shaking</h3><blockquote>
+<p>require模块会讲export的内容放在Module.default上，故不支持tree shaking。</p>
+</blockquote>
+<h3 id="scope-hosting"><a href="#scope-hosting" class="headerlink" title="scope hosting"></a>scope hosting</h3><blockquote>
+<p> 自动简化代码</p>
+</blockquote>
+<h3 id="Optimization"><a href="#Optimization" class="headerlink" title="Optimization"></a>Optimization</h3><h2 id="optimization-minimize"><a href="#optimization-minimize" class="headerlink" title="optimization.minimize"></a><code>optimization.minimize</code></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boolean = true</span><br></pre></td></tr></table></figure>
+
+<p>告知 webpack 使用 <a target="_blank" rel="noopener" href="https://webpack.docschina.org/plugins/terser-webpack-plugin/">TerserPlugin</a> 或其它在 <a target="_blank" rel="noopener" href="https://webpack.docschina.org/configuration/optimization/#optimizationminimizer"><code>optimization.minimizer</code></a> 定义的插件压缩 bundle。</p>
+<h2 id="optimization-removeEmptyChunks"><a href="#optimization-removeEmptyChunks" class="headerlink" title="optimization.removeEmptyChunks"></a><code>optimization.removeEmptyChunks</code></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boolean = true</span><br></pre></td></tr></table></figure>
+
+<p>如果 chunk 为空，告知 webpack 检测或移除这些 chunk。将 <code>optimization.removeEmptyChunks</code> 设置为 <code>false</code> 以禁用这项优化。</p>
+<h2 id="optimization-mergeDuplicateChunks"><a href="#optimization-mergeDuplicateChunks" class="headerlink" title="optimization.mergeDuplicateChunks"></a><code>optimization.mergeDuplicateChunks</code></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boolean = true</span><br></pre></td></tr></table></figure>
+
+<p>告知 webpack 合并含有相同模块的 chunk。将 <code>optimization.mergeDuplicateChunks</code> 设置为 <code>false</code> 以禁用这项优化。</p>
+<h2 id="optimization-providedExports"><a href="#optimization-providedExports" class="headerlink" title="optimization.providedExports"></a><code>optimization.providedExports</code></h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">boolean</span><br></pre></td></tr></table></figure>
+
+<p>告知 webpack 去确定那些由模块提供的导出内容，为 <code>export * from ...</code> 生成更多高效的代码。默认 <code>optimization.providedExports</code> 会被启用。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">TerserPlugin</span> = <span class="built_in">require</span>(<span class="string">&#x27;terser-webpack-plugin&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = &#123;</span><br><span class="line">  <span class="attr">optimization</span>: &#123;</span><br><span class="line">    <span class="attr">minimizer</span>: [</span><br><span class="line">      <span class="keyword">new</span> <span class="title class_">TerserPlugin</span>(&#123;</span><br><span class="line">        <span class="attr">parallel</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">sourceMap</span>: <span class="literal">true</span>, <span class="comment">// 如果在生产环境中使用 source-maps，必须设置为 true</span></span><br><span class="line">        <span class="attr">terserOptions</span>: &#123;</span><br><span class="line">          <span class="comment">// https://github.com/webpack-contrib/terser-webpack-plugin#terseroptions</span></span><br><span class="line">        &#125;,</span><br><span class="line">      &#125;),</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="attr">splitChunks</span>: &#123;</span><br><span class="line">	<span class="attr">cacheGroup</span>: &#123; </span><br><span class="line">		<span class="attr">common</span>: &#123;</span><br><span class="line">      <span class="attr">chunk</span>: <span class="string">&#x27;initial&#x27;</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">thirdPart</span>:&#123;</span><br><span class="line">      <span class="attr">test</span>: <span class="regexp">/node_modules/</span>,</span><br><span class="line">      <span class="attr">chunks</span>: <span class="string">&#x27;initial&#x27;</span>,</span><br><span class="line">      <span class="attr">priority</span>: <span class="number">2</span></span><br><span class="line">    &#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="懒加载"><a href="#懒加载" class="headerlink" title="懒加载"></a>懒加载</h3><blockquote>
+<p>Babel-sytax-dynamic-import</p>
+</blockquote>
+<h3 id="dynamic-import-原理"><a href="#dynamic-import-原理" class="headerlink" title="dynamic import 原理"></a>dynamic import 原理</h3><blockquote>
+<p>基于JSONP实现</p>
+</blockquote>
+<ol>
+<li><p>把获得promise push实例并挂在installedChunks 的List。</p>
+</li>
+<li><p>document.creatementElement（’script’）; script.src &#x3D; publicpath + func(chunckID)</p>
+</li>
+<li><p>scriptComplete</p>
+</li>
+<li><p>重写push执行webpackJsonpCallback</p>
+</li>
+<li><p>将模块标记为已加载</p>
+</li>
+<li><p>将模块代码挂载到modules exports上用promise包裹的。</p>
+</li>
+<li><p>通过thenable获取到code</p>
+</li>
+</ol>
+<h3 id="热更新原理"><a href="#热更新原理" class="headerlink" title="热更新原理"></a>热更新原理</h3><blockquote>
+<p>通过websocket建立建立双向通信，监听文件变化（时间变化而非hash变化），将文件内容放入内存（memory-fs），发送实时通知。</p>
+</blockquote>
+<p>当监听文件变化，就会调用<code>_sendStats</code>方法通过<code>websocket</code>给浏览器发送文件变动数据，以让浏览器拿到最新的hash。</p>
+<p>热更新过程</p>
+<ol>
+<li>通过 hotUpdate 查找旧模块</li>
+<li>将新的 加入 hotUpdate</li>
+<li>然后webpack——require执行</li>
+</ol>
+<h3 id="完整流程"><a href="#完整流程" class="headerlink" title="完整流程"></a>完整流程</h3><ol>
+<li>启动项目时会启动一个websocket连接</li>
+<li>启动编译</li>
+<li>调用setupHooks监听编译状态</li>
+<li>编译完成调用_sendStats发送事件</li>
+<li>客户端监听两个事件（ha sh&#x2F;ok）</li>
+<li>触发 OK 事件调用reloadApp（）</li>
+<li>reloadApp 发送webpackHotUpdate事件和当前hash给wbpack</li>
+<li>通过module.hot.check方法检查更新</li>
+<li>调用<code>hotDownloadUpdateChunk</code>发送<code>xxx/hash.hot-update.js</code> 请求。</li>
+<li>在webpackHotUpdate调用</li>
+<li>通过 hotUpdate 查找旧模块并将新的 加入 hotUpdate</li>
+<li>通过webpack_require加载执行</li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Webpack-KING%EF%BC%81%EF%BC%81-%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">Webpack KING！！ (一)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#source-map"><span class="toc-number">1.1.</span> <span class="toc-text">source map</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E7%82%B9"><span class="toc-number">1.1.1.</span> <span class="toc-text">优化点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#tree-shaking"><span class="toc-number">1.1.2.</span> <span class="toc-text">tree shaking</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#scope-hosting"><span class="toc-number">1.1.3.</span> <span class="toc-text">scope hosting</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Optimization"><span class="toc-number">1.1.4.</span> <span class="toc-text">Optimization</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-minimize"><span class="toc-number">1.2.</span> <span class="toc-text">optimization.minimize</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-removeEmptyChunks"><span class="toc-number">1.3.</span> <span class="toc-text">optimization.removeEmptyChunks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-mergeDuplicateChunks"><span class="toc-number">1.4.</span> <span class="toc-text">optimization.mergeDuplicateChunks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#optimization-providedExports"><span class="toc-number">1.5.</span> <span class="toc-text">optimization.providedExports</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%87%92%E5%8A%A0%E8%BD%BD"><span class="toc-number">1.5.1.</span> <span class="toc-text">懒加载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dynamic-import-%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.2.</span> <span class="toc-text">dynamic import 原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%83%AD%E6%9B%B4%E6%96%B0%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.3.</span> <span class="toc-text">热更新原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E6%B5%81%E7%A8%8B"><span class="toc-number">1.5.4.</span> <span class="toc-text">完整流程</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/08/15/webpack/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/08/15/webpack/&text=Webpack KING！！ (一)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/08/15/webpack/&is_video=false&description=Webpack KING！！ (一)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Webpack KING！！ (一)&body=Check out this article: https://technologybook.tech/2019/08/15/webpack/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/08/15/webpack/&title=Webpack KING！！ (一)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/08/15/webpack/&name=Webpack KING！！ (一)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/08/15/webpack/&t=Webpack KING！！ (一)"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

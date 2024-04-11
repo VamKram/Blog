@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="React 系列（virtual DOM） 一直以来，vDom以及react的diff算法都被认为是react性能的保障，二者相辅相成，构建高性能react base app发挥着作用，为了更深入的对react的了解，遂对react实现方式进行一次探究  VDom之所以存在的原因，是由于传统的直接操作DOM的方式过于低效。根据浏览器的工作方式，操作一个DOM的过程如下:  DOM render p">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React 系列（virtual DOM）">
+<meta property="og:url" content="https://technologybook.tech/2017/11/19/ReactVdom/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="React 系列（virtual DOM） 一直以来，vDom以及react的diff算法都被认为是react性能的保障，二者相辅相成，构建高性能react base app发挥着作用，为了更深入的对react的了解，遂对react实现方式进行一次探究  VDom之所以存在的原因，是由于传统的直接操作DOM的方式过于低效。根据浏览器的工作方式，操作一个DOM的过程如下:  DOM render p">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://camo.githubusercontent.com/ad7c297c15083efd21c946cc23bd064a083d11be/68747470733a2f2f646f63732e676f6f676c652e636f6d2f64726177696e67732f642f31317567425477446b716e3670326e35466b7073317033456c70385a546f49527a587a764d344c4a4d5961552f7075623f773d35343326683d323239">
+<meta property="article:published_time" content="2017-11-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.876Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="react source">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/ad7c297c15083efd21c946cc23bd064a083d11be/68747470733a2f2f646f63732e676f6f676c652e636f6d2f64726177696e67732f642f31317567425477446b716e3670326e35466b7073317033456c70385a546f49527a587a764d344c4a4d5961552f7075623f773d35343326683d323239">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>React 系列（virtual DOM）</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/12/05/MiniReact/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2017/11/15/decorate/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/11/19/ReactVdom/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/11/19/ReactVdom/&text=React 系列（virtual DOM）"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/11/19/ReactVdom/&is_video=false&description=React 系列（virtual DOM）"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=React 系列（virtual DOM）&body=Check out this article: https://technologybook.tech/2017/11/19/ReactVdom/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/11/19/ReactVdom/&name=React 系列（virtual DOM）&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/11/19/ReactVdom/&t=React 系列（virtual DOM）"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#React-%E7%B3%BB%E5%88%97%EF%BC%88virtual-DOM%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">React 系列（virtual DOM）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DOM-render-process"><span class="toc-number">1.0.1.</span> <span class="toc-text">DOM render process</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Virtual-DOM-render-process"><span class="toc-number">1.0.2.</span> <span class="toc-text">Virtual DOM render process</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Vdom%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">Vdom的模型</span></a></li></ol></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        React 系列（virtual DOM）
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-11-18T16:00:00.000Z" class="dt-published" itemprop="datePublished">2017-11-19</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/react/">react</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/react-source/" rel="tag">react source</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="React-系列（virtual-DOM）"><a href="#React-系列（virtual-DOM）" class="headerlink" title="React 系列（virtual DOM）"></a>React 系列（virtual DOM）</h1><blockquote>
+<p>一直以来，vDom以及react的diff算法都被认为是react性能的保障，二者相辅相成，构建高性能react base app发挥着作用，为了更深入的对react的了解，遂对react实现方式进行一次探究</p>
+</blockquote>
+<pre><code>VDom之所以存在的原因，是由于传统的直接操作DOM的方式过于低效。根据浏览器的工作方式，操作一个DOM的过程如下:
+</code></pre>
+<h3 id="DOM-render-process"><a href="#DOM-render-process" class="headerlink" title="DOM render process"></a>DOM render process</h3><ul>
+<li>render engine 会解析HTML文件，生成DOM tree</li>
+<li>render style 创建 解释样式的 render tree</li>
+<li>reflow 根据renderer对象，分配一组屏幕坐标值</li>
+<li>painting 调用处理UI的API吊起GUI线程完成绘制</li>
+</ul>
+<p>而操作一个Vdom的过程则是：</p>
+<h3 id="Virtual-DOM-render-process"><a href="#Virtual-DOM-render-process" class="headerlink" title="Virtual DOM render process"></a>Virtual DOM render process</h3><ul>
+<li>对DOM信息进行抽象</li>
+<li>修改节点时不会每次都重绘，把多次对Vdom的操作整合</li>
+<li>调用DOM API （createElement， inserBfore等等。。）</li>
+<li>DOM render process</li>
+</ul>
+<p>可以看出Vdom是由于真实DOM操作成本过高的一种解决方案，Vdom是对dom的一种抽象，这个过程大大的优化了频繁操作DOM的成本。</p>
+<h4 id="Vdom的模型"><a href="#Vdom的模型" class="headerlink" title="Vdom的模型"></a>Vdom的模型</h4><blockquote>
+<p>简而言之Vdom是对real DOM 的抽象</p>
+</blockquote>
+<p>一个VDOM需要具备描述节点类型，传递节点信息，传递子节点信息的能力。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ReactElement描述的节点信息</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">$$typeof</span>: <span class="variable constant_">REACT_ELEMENT_TYPE</span>,</span><br><span class="line">    <span class="attr">type</span>: type,</span><br><span class="line">    <span class="attr">key</span>: key,</span><br><span class="line">    <span class="attr">ref</span>: ref,</span><br><span class="line">    <span class="attr">props</span>: props,</span><br><span class="line">    <span class="attr">_owner</span>: owner,</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过createElement创建Vdom的过程<br><img src="https://camo.githubusercontent.com/ad7c297c15083efd21c946cc23bd064a083d11be/68747470733a2f2f646f63732e676f6f676c652e636f6d2f64726177696e67732f642f31317567425477446b716e3670326e35466b7073317033456c70385a546f49527a587a764d344c4a4d5961552f7075623f773d35343326683d323239" alt="vd"></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// react source code </span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">createElement</span>(<span class="params">type, config, children</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> propName;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Reserved names are extracted</span></span><br><span class="line">  <span class="keyword">const</span> props = &#123;&#125;;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> key = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">let</span> ref = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">let</span> self = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">let</span> source = <span class="literal">null</span>;</span><br><span class="line"><span class="comment">// 省略。。。</span></span><br><span class="line">  <span class="keyword">return</span> <span class="title class_">ReactElement</span>(</span><br><span class="line">    type,</span><br><span class="line">    key,</span><br><span class="line">    ref,</span><br><span class="line">    self,</span><br><span class="line">    source,</span><br><span class="line">    <span class="title class_">ReactCurrentOwner</span>.<span class="property">current</span>,</span><br><span class="line">    props,</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line"><span class="comment">// reactElement 创建</span></span><br><span class="line"><span class="keyword">const</span> <span class="title class_">ReactElement</span> = <span class="keyword">function</span>(<span class="params">type, key, ref, self, source, owner, props</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> element = &#123;</span><br><span class="line">    <span class="comment">// This tag allows us to uniquely identify this as a React Element</span></span><br><span class="line">    <span class="attr">$$typeof</span>: <span class="variable constant_">REACT_ELEMENT_TYPE</span>,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Built-in properties that belong on the element</span></span><br><span class="line">    <span class="attr">type</span>: type,</span><br><span class="line">    <span class="attr">key</span>: key,</span><br><span class="line">    <span class="attr">ref</span>: ref,</span><br><span class="line">    <span class="attr">props</span>: props,</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Record the component responsible for creating this element.</span></span><br><span class="line">    <span class="attr">_owner</span>: owner,</span><br><span class="line">  &#125;;</span><br><span class="line">    <span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+
+<p>​	react 会根据组件的Type来判断，组件是文字节点，标签，或是自定义组件，然后通过递归组件type并调用DOMAPI，createElement方法或createText生成real dom，最终返回一个真正意义上的DOM。</p>
+<p>在得到了一个Vdom的情况下需要进行vdom -&gt; dom的转化，这个过程在源码中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在新架构之前ReactElement会调用一个instantiateReactComponent方法去处理相关逻辑</span></span><br><span class="line"><span class="comment">// 在最新的版本中createElement$1负责构建DOM tree</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createElement$1</span>(<span class="params">type, props, rootContainerElement, parentNamespace</span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> isCustomComponentTag = <span class="keyword">void</span> <span class="number">0</span>;</span><br><span class="line"><span class="comment">// 在父容器的命名空间中创建标记</span></span><br><span class="line"><span class="comment">// 标签没有命名空间。</span></span><br><span class="line">  <span class="keyword">var</span> ownerDocument = <span class="title function_">getOwnerDocumentFromRootContainer</span>(rootContainerElement);</span><br><span class="line">  <span class="keyword">var</span> domElement = <span class="keyword">void</span> <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">var</span> namespaceURI = parentNamespace;</span><br><span class="line">  <span class="keyword">if</span> (namespaceURI === <span class="variable constant_">HTML_NAMESPACE</span>) &#123;</span><br><span class="line">    namespaceURI = <span class="title function_">getIntrinsicNamespace</span>(type);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (namespaceURI === <span class="variable constant_">HTML_NAMESPACE</span>) &#123;</span><br><span class="line">    &#123;</span><br><span class="line">      isCustomComponentTag = <span class="title function_">isCustomComponent</span>(type, props);</span><br><span class="line">      <span class="comment">// 判断是否是自定义Component或命名规范 </span></span><br><span class="line">      !(isCustomComponentTag || type === type.<span class="title function_">toLowerCase</span>()) ? <span class="title function_">warning</span>(<span class="literal">false</span>, <span class="string">&#x27;&lt;%s /&gt; is using incorrect casing. &#x27;</span> + <span class="string">&#x27;Use PascalCase for React components, &#x27;</span> + <span class="string">&#x27;or lowercase for HTML elements.&#x27;</span>, type) : <span class="keyword">void</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (type === <span class="string">&#x27;script&#x27;</span>) &#123;</span><br><span class="line">      <span class="keyword">var</span> div = ownerDocument.<span class="title function_">createElement</span>(<span class="string">&#x27;div&#x27;</span>);</span><br><span class="line">      div.<span class="property">innerHTML</span> = <span class="string">&#x27;&lt;script&gt;&lt;&#x27;</span> + <span class="string">&#x27;/script&gt;&#x27;</span>; <span class="comment">// eslint-disable-line</span></span><br><span class="line">      <span class="comment">// 确保产生一个script</span></span><br><span class="line">      <span class="keyword">var</span> firstChild = div.<span class="property">firstChild</span>;</span><br><span class="line">      domElement = div.<span class="title function_">removeChild</span>(firstChild);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> props.<span class="property">is</span> === <span class="string">&#x27;string&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// 根据Type创建标签</span></span><br><span class="line">      domElement = ownerDocument.<span class="title function_">createElement</span>(type, &#123; <span class="attr">is</span>: props.<span class="property">is</span> &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      domElement = ownerDocument.<span class="title function_">createElement</span>(type);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    domElement = ownerDocument.<span class="title function_">createElementNS</span>(namespaceURI, type);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">if</span> (namespaceURI === <span class="variable constant_">HTML_NAMESPACE</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!isCustomComponentTag &amp;&amp; <span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">toString</span>.<span class="title function_">call</span>(domElement) === <span class="string">&#x27;[object HTMLUnknownElement]&#x27;</span> &amp;&amp; !<span class="title class_">Object</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">hasOwnProperty</span>.<span class="title function_">call</span>(warnedUnknownTags, type)) &#123;</span><br><span class="line">        warnedUnknownTags[type] = <span class="literal">true</span>;</span><br><span class="line">        <span class="title function_">warning</span>(<span class="literal">false</span>, <span class="string">&#x27;The tag &lt;%s&gt; is unrecognized in this browser. &#x27;</span> + <span class="string">&#x27;If you meant to render a React component, start its name with &#x27;</span> + <span class="string">&#x27;an uppercase letter.&#x27;</span>, type);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> domElement;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>包括生成Text的方法，以及跳出递归的条件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 生成TextNode的源码</span><br><span class="line">function createTextNode$1(text, rootContainerElement) &#123;</span><br><span class="line">  return getOwnerDocumentFromRootContainer(rootContainerElement).createTextNode(text);</span><br><span class="line">&#125;</span><br><span class="line">function getOwnerDocumentFromRootContainer(rootContainerElement) &#123;</span><br><span class="line">  return rootContainerElement.nodeType === DOCUMENT_NODE ? rootContainerElement : rootContainerElement.ownerDocument;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Text作为React递归非错误的跳出条件，逻辑很简单。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">function batchedUpdates（fn，bookkeeping）&#123;</span><br><span class="line">   if（isBatching）&#123;</span><br><span class="line">     //在restore state之前完全完成时，等待batching。</span><br><span class="line">     return fn（bookkeeping）;</span><br><span class="line">  &#125;</span><br><span class="line">   isBatching = true;</span><br><span class="line">   try&#123;</span><br><span class="line">     return _batchedUpdates（fn，bookkeeping）;</span><br><span class="line">   &#125; finally &#123;</span><br><span class="line">     //等到所有更新都传播完毕</span><br><span class="line">     //恢复受控组件的状态。</span><br><span class="line">     isBatching = false;</span><br><span class="line">     var controlledComponentsHavePendingUpdates = needsStateRestore（）;</span><br><span class="line">     if（controlledComponentsHavePendingUpdates）&#123;</span><br><span class="line">       //如果触发了受控事件，需要恢复状态</span><br><span class="line">       // DOM节点返回受控值。</span><br><span class="line">       //确保没有操作DOM的情况。</span><br><span class="line">      _flushInteractiveUpdates（）;</span><br><span class="line">      restoreStateIfNeeded（）;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此react 从Vdom到dom的创建过程已经明了，当然React还包含了一套事件绑定机制，和充分利用rest 线程的fiber架构等等。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#React-%E7%B3%BB%E5%88%97%EF%BC%88virtual-DOM%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">React 系列（virtual DOM）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DOM-render-process"><span class="toc-number">1.0.1.</span> <span class="toc-text">DOM render process</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Virtual-DOM-render-process"><span class="toc-number">1.0.2.</span> <span class="toc-text">Virtual DOM render process</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Vdom%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">Vdom的模型</span></a></li></ol></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/11/19/ReactVdom/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/11/19/ReactVdom/&text=React 系列（virtual DOM）"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/11/19/ReactVdom/&is_video=false&description=React 系列（virtual DOM）"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=React 系列（virtual DOM）&body=Check out this article: https://technologybook.tech/2017/11/19/ReactVdom/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/11/19/ReactVdom/&title=React 系列（virtual DOM）"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/11/19/ReactVdom/&name=React 系列（virtual DOM）&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/11/19/ReactVdom/&t=React 系列（virtual DOM）"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

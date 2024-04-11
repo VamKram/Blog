@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Javascript this一.Global this1，在浏览器里，全局情况下this等同于window对象。2，当没有var 或 let 时 对变量的修改就是在改变this 的属性值。3，node环境里 一般的会给global this 同时赋值。4，node环境中 逐行读取的情况中 会优先给Global赋值。 二.Function this1，如果调用函数时使用new 那么它就会成为一个新">
+<meta property="og:type" content="article">
+<meta property="og:title" content="This">
+<meta property="og:url" content="https://technologybook.tech/2017/01/12/this/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="Javascript this一.Global this1，在浏览器里，全局情况下this等同于window对象。2，当没有var 或 let 时 对变量的修改就是在改变this 的属性值。3，node环境里 一般的会给global this 同时赋值。4，node环境中 逐行读取的情况中 会优先给Global赋值。 二.Function this1，如果调用函数时使用new 那么它就会成为一个新">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2017-01-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.878Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="js">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>This</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/01/12/fp/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2017/01/04/closure/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/01/12/this/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/01/12/this/&text=This"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/01/12/this/&is_video=false&description=This"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=This&body=Check out this article: https://technologybook.tech/2017/01/12/this/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/01/12/this/&name=This&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/01/12/this/&t=This"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Javascript-this"><span class="toc-number">1.</span> <span class="toc-text">Javascript this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80-Global-this"><span class="toc-number">2.</span> <span class="toc-text">一.Global this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C-Function-this"><span class="toc-number">3.</span> <span class="toc-text">二.Function this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89-Prototype-this"><span class="toc-number">4.</span> <span class="toc-text">三.Prototype this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B-Object-this"><span class="toc-number">5.</span> <span class="toc-text">四.Object this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94-HTML-override-jQuery-thisArg-this"><span class="toc-number">6.</span> <span class="toc-text">五.HTML &amp; override &amp; jQuery &amp; thisArg this</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        This
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-01-11T16:00:00.000Z" class="dt-published" itemprop="datePublished">2017-01-12</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/js/">js</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/js/" rel="tag">js</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Javascript-this"><a href="#Javascript-this" class="headerlink" title="Javascript this"></a>Javascript this</h1><h1 id="一-Global-this"><a href="#一-Global-this" class="headerlink" title="一.Global this"></a>一.Global this</h1><p>1，在浏览器里，<strong>全局情况下this等同于window对象。</strong><br>2，当没有var 或 let 时 对变量的修改就是在改变this 的属性值。<br>3，node环境里 一般的会给global this 同时赋值。<br>4，node环境中 逐行读取的情况中 会优先给Global赋值。</p>
+<h1 id="二-Function-this"><a href="#二-Function-this" class="headerlink" title="二.Function this"></a>二.Function this</h1><p>1，如果调用函数时使用new 那么它就会成为一个新值。<br>2，如果<strong>正常使用this 那么他就指代一个全局的this</strong> 如果<strong>添加一个new</strong> 那么它就成为了<strong>构造函数</strong>并创建了一个实例，this指代这个实例（<strong>如果你在调用函数的时候在前面使用了new，this就会变成一个新的值，和global的this脱离干系</strong>）。<br>例如( setTimeout, setInterval,addEventListenner),通常使用self 来解决这个问题。</p>
+<h1 id="三-Prototype-this"><a href="#三-Prototype-this" class="headerlink" title="三.Prototype this"></a>三.Prototype this</h1><p>1，<strong>每创建一个函数对象</strong>就会<strong>自动获得一个特殊属性prototype</strong> 通过<strong>new 调用一个函数就能通过this 访问这个值</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">function Thing() &#123;</span><br><span class="line">       console.log(this.foo);</span><br><span class="line">        &#125;</span><br><span class="line">Thing.prototype.foo = &quot;bar&quot;;</span><br><span class="line">var thing = new Thing(); //logs &quot;bar&quot;</span><br><span class="line">console.log(thing.foo);  //logs &quot;bar&quot;（原型链）</span><br></pre></td></tr></table></figure>
+
+<p>2，可以通过在实例里面删除自己添加的属性的方式来实现<br>Thing.prototype.deleteFoo &#x3D; function () {<br>delete this.foo;<br>}<br>3，可以把多个函数 的prototype 链接起来从而形成一个原型链 这样this会沿着这条原型链网上查找知道找到你想要的值。（原型继承）<br>4，在prototype里面定义的方法会<strong>影响到当前实例上游的this</strong> 这意味着<strong>当你赋值时this时隐藏了上游的属性</strong>（Ting1的实例中的<strong>proto</strong>指向Thing2的prototype属性建立原型链）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function Thing1() &#123;</span><br><span class="line"> &#125;</span><br><span class="line">Thing1.prototype.foo = &quot;bar&quot;;</span><br><span class="line">Thing1.prototype.logFoo = function () &#123;</span><br><span class="line">    console.log(this.foo);</span><br><span class="line">     &#125;</span><br><span class="line">function Thing2() &#123;</span><br><span class="line"> this.foo = &quot;foo&quot;;</span><br><span class="line">     &#125;</span><br><span class="line">*   Thing2.prototype = new Thing1();</span><br></pre></td></tr></table></figure>
+
+<p>5，<strong>嵌套函数可以捕获父元素的变量，但时这个函数没有继承this（通常使用 var _this &#x3D; this来结局这个问题）</strong><br>6，<strong>通过bind 可以将实例与方法一同传给函数</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> function Thing() &#123;</span><br><span class="line">                     &#125;</span><br><span class="line"> Thing.prototype.foo = &quot;bar&quot;;</span><br><span class="line"> Thing.prototype.logFoo = function () &#123; </span><br><span class="line">         console.log(this.foo);</span><br><span class="line">         &#125;</span><br><span class="line"> function doIt(method) &#123;</span><br><span class="line">        method();</span><br><span class="line">         &#125;       </span><br><span class="line">var thing = new Thing();</span><br><span class="line">//console.log(aStr , this.foo);</span><br><span class="line"> doIt(thing.logFoo.bind(thing)); //logs bar</span><br><span class="line">logFoo.bind(thing)(&quot;using bind&quot;); //logs &quot;using bind bar&quot;</span><br><span class="line">logFoo.apply(thing, [&quot;using apply&quot;]); //logs &quot;using apply bar&quot;</span><br><span class="line">logFoo.call(thing, &quot;using call&quot;); //logs &quot;using call bar&quot;</span><br><span class="line">logFoo(&quot;using nothing&quot;); //logs &quot;using nothing undefined&quot;</span><br></pre></td></tr></table></figure>
+
+<p>7,可<strong>以通过var thing &#x3D; Object.create（Thing.prototype）来创建一个实例</strong>，这种创建方式<strong>在继承模式下重写构造函数</strong>非常有用。Thing2.prototype &#x3D; Object.create(Thing1.prototype);（通过new操纵继承 ，通过object.create继承<strong>不会</strong>调用构造函数）</p>
+<h1 id="四-Object-this"><a href="#四-Object-this" class="headerlink" title="四.Object this"></a>四.Object this</h1><p>1，只 有有相同的<strong>直接父元素</strong>的属性才能通过this共享变量（两次黏连就近原则）<br>2，可以直接通过对象引用你需要的属性</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">var obj = &#123;</span><br><span class="line">              foo: &quot;bar&quot;,</span><br><span class="line">              deeper: &#123;</span><br><span class="line">              logFoo: function () &#123;</span><br><span class="line">              console.log(obj.foo);</span><br><span class="line">             &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;;</span><br><span class="line">    obj.deeper.logFoo(); //logs &quot;bar&quot;</span><br></pre></td></tr></table></figure>
+
+<p>四.DOM event this<br>1，在一个HTML DOM事件处理程序里边 ， <strong>this 始终指向这个处理程序被所绑定到的HTML DOM 节点</strong> （除非使用了bind）</p>
+<h1 id="五-HTML-override-jQuery-thisArg-this"><a href="#五-HTML-override-jQuery-thisArg-this" class="headerlink" title="五.HTML &amp; override &amp; jQuery &amp; thisArg this"></a>五.HTML &amp; override &amp; jQuery &amp; thisArg this</h1><p>1，this 是保留字不能够重写<br>2，eval可以访问this<br>3，HTML 中可以放置代码并指向这个元素<br>4，你可以通过with来将this添加到当前的执行环境，并且读写this的属性的时候不需要通过this<br>5，<strong>jQuery 中this都是指向HTML 元素节点 及应用</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> 1 &lt;div class=&quot;foo bar1&quot;&gt;&lt;/div&gt;</span><br><span class="line"> 2 &lt;div class=&quot;foo bar2&quot;&gt;&lt;/div&gt;</span><br><span class="line"> 3 &lt;script type=&quot;text/javascript&quot;&gt;</span><br><span class="line"> 4 $(&quot;.foo&quot;).each(function () &#123;</span><br><span class="line"> 5     console.log(this); //logs &lt;div class=&quot;foo...</span><br><span class="line"> 6 &#125;);</span><br><span class="line"> 7 $(&quot;.foo&quot;).on(&quot;click&quot;, function () &#123;</span><br><span class="line"> 8     console.log(this); //logs &lt;div class=&quot;foo...</span><br><span class="line"> 9 &#125;);</span><br><span class="line">10 $(&quot;.foo&quot;).each(function () &#123;</span><br><span class="line">11     this.click();</span><br><span class="line">12 &#125;);</span><br><span class="line">13 &lt;/script&gt;  </span><br></pre></td></tr></table></figure>
+
+<p>thisArgs bind call apply thisArgs传参给函数 这个this 绑定 为你传递的对象。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Javascript-this"><span class="toc-number">1.</span> <span class="toc-text">Javascript this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80-Global-this"><span class="toc-number">2.</span> <span class="toc-text">一.Global this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C-Function-this"><span class="toc-number">3.</span> <span class="toc-text">二.Function this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89-Prototype-this"><span class="toc-number">4.</span> <span class="toc-text">三.Prototype this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B-Object-this"><span class="toc-number">5.</span> <span class="toc-text">四.Object this</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94-HTML-override-jQuery-thisArg-this"><span class="toc-number">6.</span> <span class="toc-text">五.HTML &amp; override &amp; jQuery &amp; thisArg this</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/01/12/this/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/01/12/this/&text=This"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/01/12/this/&is_video=false&description=This"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=This&body=Check out this article: https://technologybook.tech/2017/01/12/this/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/01/12/this/&title=This"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/01/12/this/&name=This&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/01/12/this/&t=This"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

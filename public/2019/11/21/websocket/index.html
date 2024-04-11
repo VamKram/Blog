@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Html5 WebSocket一，WebSocket创建过程  创建监听事件 断开连接 消息时间 发送消息返回服务器 关闭连接  1234567891011121314151617&#x2F;&#x2F; 创建一个Socket实例var socket &#x3D; new WebSocket(&amp;#x27;ws:&#x2F;&#x2F;localhost:8080&amp;#x27;); &#x2F;&#x2F; 打开Socket socket.onopen &#x3D; functi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Html5 WebSocket">
+<meta property="og:url" content="https://technologybook.tech/2019/11/21/websocket/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="Html5 WebSocket一，WebSocket创建过程  创建监听事件 断开连接 消息时间 发送消息返回服务器 关闭连接  1234567891011121314151617&#x2F;&#x2F; 创建一个Socket实例var socket &#x3D; new WebSocket(&amp;#x27;ws:&#x2F;&#x2F;localhost:8080&amp;#x27;); &#x2F;&#x2F; 打开Socket socket.onopen &#x3D; functi">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2019-11-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.879Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="webSocket">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Html5 WebSocket</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/12/25/react_v16/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/09/17/webpack4/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/11/21/websocket/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/11/21/websocket/&text=Html5 WebSocket"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/11/21/websocket/&is_video=false&description=Html5 WebSocket"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Html5 WebSocket&body=Check out this article: https://technologybook.tech/2019/11/21/websocket/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/11/21/websocket/&name=Html5 WebSocket&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/11/21/websocket/&t=Html5 WebSocket"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Html5-WebSocket"><span class="toc-number">1.</span> <span class="toc-text">Html5 WebSocket</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NodeJS%E5%92%8CSocket-IO%E8%81%94%E5%90%88%E5%BC%80%E5%8F%91"><span class="toc-number">1.1.</span> <span class="toc-text">NodeJS和Socket.IO联合开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E5%8D%97%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.</span> <span class="toc-text">指南介绍</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Html5 WebSocket
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-11-20T16:00:00.000Z" class="dt-published" itemprop="datePublished">2019-11-21</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/html/">html</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/webSocket/" rel="tag">webSocket</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Html5-WebSocket"><a href="#Html5-WebSocket" class="headerlink" title="Html5 WebSocket"></a>Html5 WebSocket</h1><p>一，WebSocket创建过程</p>
+<ul>
+<li>创建监听事件</li>
+<li>断开连接</li>
+<li>消息时间</li>
+<li>发送消息返回服务器</li>
+<li>关闭连接</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个Socket实例</span></span><br><span class="line"><span class="keyword">var</span> socket = <span class="keyword">new</span> <span class="title class_">WebSocket</span>(<span class="string">&#x27;ws://localhost:8080&#x27;</span>); </span><br><span class="line"><span class="comment">// 打开Socket </span></span><br><span class="line">socket.<span class="property">onopen</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123; </span><br><span class="line">  <span class="comment">// 发送一个初始化消息</span></span><br><span class="line">  socket.<span class="title function_">send</span>(<span class="string">&#x27;I am the client and I\&#x27;m listening!&#x27;</span>); </span><br><span class="line">  <span class="comment">// 监听消息</span></span><br><span class="line">  socket.<span class="property">onmessage</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123; </span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Client received a message&#x27;</span>,event); </span><br><span class="line">  &#125;; </span><br><span class="line">  <span class="comment">// 监听Socket的关闭</span></span><br><span class="line">  socket.<span class="property">onclose</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123; </span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Client notified socket has closed&#x27;</span>,event); </span><br><span class="line">  &#125;; </span><br><span class="line">  <span class="comment">// 关闭Socket.... </span></span><br><span class="line">  <span class="comment">//socket.close() </span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="NodeJS和Socket-IO联合开发"><a href="#NodeJS和Socket-IO联合开发" class="headerlink" title="NodeJS和Socket.IO联合开发"></a>NodeJS和Socket.IO联合开发</h2><p>Socket.IO提供的服务器端解决方案，允许统一的客户端和服务器端的API。使用Node，你可以<strong>创建一个典型的HTTP服务器</strong>，然后<strong>把服务器的实例传递到Socket.IO</strong>。从这里，你创建连接、断开连接、建立消息监听器，跟在客户端一样。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 需要HTTP 模块来启动服务器和Socket.IO</span></span><br><span class="line"><span class="keyword">var</span> http= <span class="built_in">require</span>(<span class="string">&#x27;http&#x27;</span>), io= <span class="built_in">require</span>(<span class="string">&#x27;socket.io&#x27;</span>); </span><br><span class="line"><span class="comment">// 在8080端口启动服务器</span></span><br><span class="line"><span class="keyword">var</span> server= http.<span class="title function_">createServer</span>(<span class="keyword">function</span>(<span class="params">req, res</span>)&#123; </span><br><span class="line">  <span class="comment">// 发送HTML的headers和message</span></span><br><span class="line">  res.<span class="title function_">writeHead</span>(<span class="number">200</span>,&#123; <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;text/html&#x27;</span> &#125;); </span><br><span class="line">  res.<span class="title function_">end</span>(<span class="string">&#x27;&lt;h1&gt;Hello Socket Lover!&lt;/h1&gt;&#x27;</span>); </span><br><span class="line">&#125;); </span><br><span class="line">server.<span class="title function_">listen</span>(<span class="number">8080</span>); </span><br><span class="line"><span class="comment">// 创建一个Socket.IO实例，把它传递给服务器</span></span><br><span class="line"><span class="keyword">var</span> socket= io.<span class="title function_">listen</span>(server); </span><br><span class="line"><span class="comment">// 添加一个连接监听器</span></span><br><span class="line">socket.<span class="title function_">on</span>(<span class="string">&#x27;connection&#x27;</span>, <span class="keyword">function</span>(<span class="params">client</span>)&#123; </span><br><span class="line">  <span class="comment">// 成功！现在开始监听接收到的消息</span></span><br><span class="line">  client.<span class="title function_">on</span>(<span class="string">&#x27;message&#x27;</span>,<span class="keyword">function</span>(<span class="params">event</span>)&#123; </span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Received message from client!&#x27;</span>,event); </span><br><span class="line">  &#125;); </span><br><span class="line">  client.<span class="title function_">on</span>(<span class="string">&#x27;disconnect&#x27;</span>,<span class="keyword">function</span>(<span class="params"></span>)&#123; </span><br><span class="line">    <span class="built_in">clearInterval</span>(interval); </span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Server has disconnected&#x27;</span>); </span><br><span class="line">  &#125;); </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>你可以运行服务器部分，假定已安装了NodeJS，从命令行执行：</p>
+<blockquote>
+<p>node socket-server.js</p>
+</blockquote>
+<p>现在客户端和服务器都能来回推送消息了！在NodeJS脚本内，可以使用简单的JavaScript创建一个定期消息发送器：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个定期（每5秒）发送消息到客户端的发送器</span></span><br><span class="line"><span class="keyword">var</span> interval= <span class="built_in">setInterval</span>(<span class="keyword">function</span>(<span class="params"></span>) &#123; </span><br><span class="line">  client.<span class="title function_">send</span>(<span class="string">&#x27;This is a message from the server! &#x27;</span> + <span class="keyword">new</span> <span class="title class_">Date</span>().<span class="title function_">getTime</span>()); </span><br><span class="line">&#125;,<span class="number">5000</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<hr>
+<p>服务器端将会每5秒推送消息到客户端！</p>
+<h2 id="指南介绍"><a href="#指南介绍" class="headerlink" title="指南介绍"></a>指南介绍</h2><p><strong>WebSocket内容</strong>：全双工，一旦建立WebSocket连接，客户端和服务端可以在任何时候互相传送消息（不是采用响应请求的方式），每个基于WebSockt的服务都必须定义自己的子协议用于传输数据（兼容性差多版本），WebSocket包含一种协商机制（用于挑选）可以传一个字符串数组给WebSocket构造函数服务器端会生成一个子协议列表传递给客户端，客户端通过protocol检查是哪种协议</p>
+<ol>
+<li>首先创建一个socket</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var socket = new WebSocket(&quot;ws:/ws.example.com:1234/resource&quot;)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>创建套接字通常需要注册一个事件处理程序</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">socket.<span class="property">onopen</span> = <span class="keyword">function</span>(<span class="params">e</span>)&#123;<span class="comment">/* connection*/</span> &#125;;</span><br><span class="line">socket.<span class="property">onclose</span> = <span class="keyword">function</span>(<span class="params">e</span>)&#123;<span class="comment">/*close */</span>&#125;;</span><br><span class="line">socket.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params">e</span>)&#123; <span class="comment">/* error*/</span>&#125;</span><br><span class="line">socket.<span class="property">onmessage</span> = <span class="keyword">function</span>(<span class="params">e</span>)&#123;</span><br><span class="line">        <span class="keyword">var</span> mes = e.<span class="property">data</span><span class="comment">//向服务器发送一条消息</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>调用send方法</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scocket.send(&quot;Hello&quot;);//send();</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>close 关闭</li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Html5-WebSocket"><span class="toc-number">1.</span> <span class="toc-text">Html5 WebSocket</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#NodeJS%E5%92%8CSocket-IO%E8%81%94%E5%90%88%E5%BC%80%E5%8F%91"><span class="toc-number">1.1.</span> <span class="toc-text">NodeJS和Socket.IO联合开发</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E5%8D%97%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.2.</span> <span class="toc-text">指南介绍</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/11/21/websocket/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/11/21/websocket/&text=Html5 WebSocket"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/11/21/websocket/&is_video=false&description=Html5 WebSocket"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Html5 WebSocket&body=Check out this article: https://technologybook.tech/2019/11/21/websocket/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/11/21/websocket/&title=Html5 WebSocket"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/11/21/websocket/&name=Html5 WebSocket&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/11/21/websocket/&t=Html5 WebSocket"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

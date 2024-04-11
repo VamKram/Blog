@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Rx更进一步借用Jay phelps在Youtube上介绍Rx十分精炼的总结，Rx &#x3D; Lodash of Promise，在Node或是前端，处理异步一直是一个麻烦的事情，于是就有了各种各样的异步解决方案，callback，exent，Promise，generate，async&#x2F;await现在我们又有了Rx。 异步解决方案以读写文件为例子，看看异步处理方案的演进 call">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rx更进一步">
+<meta property="og:url" content="https://technologybook.tech/2017/10/03/RxDeep/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="Rx更进一步借用Jay phelps在Youtube上介绍Rx十分精炼的总结，Rx &#x3D; Lodash of Promise，在Node或是前端，处理异步一直是一个麻烦的事情，于是就有了各种各样的异步解决方案，callback，exent，Promise，generate，async&#x2F;await现在我们又有了Rx。 异步解决方案以读写文件为例子，看看异步处理方案的演进 call">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2016/02/1455228348streams.png">
+<meta property="article:published_time" content="2017-10-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.876Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="rxjs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2016/02/1455228348streams.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Rx更进一步</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/11/15/decorate/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2017/09/09/RxjsSummary/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/10/03/RxDeep/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/10/03/RxDeep/&text=Rx更进一步"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/10/03/RxDeep/&is_video=false&description=Rx更进一步"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Rx更进一步&body=Check out this article: https://technologybook.tech/2017/10/03/RxDeep/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/10/03/RxDeep/&name=Rx更进一步&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/10/03/RxDeep/&t=Rx更进一步"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Rx%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5"><span class="toc-number">1.</span> <span class="toc-text">Rx更进一步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.0.1.</span> <span class="toc-text">异步解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#callback"><span class="toc-number">1.0.2.</span> <span class="toc-text">callback</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#event"><span class="toc-number">1.0.3.</span> <span class="toc-text">event</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Promise-async-await"><span class="toc-number">1.0.4.</span> <span class="toc-text">Promise &amp;&amp; async&#x2F;await</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generator"><span class="toc-number">1.0.5.</span> <span class="toc-text">Generator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rx"><span class="toc-number">1.0.6.</span> <span class="toc-text">Rx</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Rx更进一步
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-10-02T16:00:00.000Z" class="dt-published" itemprop="datePublished">2017-10-03</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/reactive-programming/">reactive programming</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/rxjs/" rel="tag">rxjs</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p><img src="https://dab1nmslvvntp.cloudfront.net/wp-content/uploads/2016/02/1455228348streams.png" alt="rx"></p>
+<h1 id="Rx更进一步"><a href="#Rx更进一步" class="headerlink" title="Rx更进一步"></a>Rx更进一步</h1><p>借用Jay phelps在Youtube上介绍Rx十分精炼的总结，Rx &#x3D; Lodash of Promise，在Node或是前端，处理异步一直是一个麻烦的事情，于是就有了各种各样的异步解决方案，callback，exent，Promise，generate，async&#x2F;await现在我们又有了Rx。</p>
+<h3 id="异步解决方案"><a href="#异步解决方案" class="headerlink" title="异步解决方案"></a>异步解决方案</h3><p>以读写文件为例子，看看异步处理方案的演进</p>
+<h3 id="callback"><a href="#callback" class="headerlink" title="callback"></a>callback</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fs.<span class="title function_">readFile</span>(<span class="string">&#x27;test.txt&#x27;</span>, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (err) <span class="variable language_">console</span>.<span class="title function_">log</span>(err);</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(data)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="event"><a href="#event" class="headerlink" title="event"></a>event</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> readStream = fs.<span class="title function_">createReadStream</span>(<span class="string">&#x27;test.txt&#x27;</span>);</span><br><span class="line">readStream.<span class="title function_">on</span>(<span class="string">&#x27;open&#x27;</span>, <span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(data)</span><br><span class="line">&#125;)</span><br><span class="line">readStream.<span class="title function_">close</span>(<span class="string">&#x27;close&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;closed&#x27;</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Promise-async-await"><a href="#Promise-async-await" class="headerlink" title="Promise &amp;&amp; async&#x2F;await"></a>Promise &amp;&amp; async&#x2F;await</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">readFilePromise</span>(<span class="params">path</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function">(<span class="params">res, rej</span>) =&gt;</span> &#123;</span><br><span class="line">        fs.<span class="title function_">readFile</span>(path, <span class="function">(<span class="params">err, data</span>) =&gt;</span> &#123;</span><br><span class="line">        	<span class="keyword">if</span>(err) &#123;</span><br><span class="line">                <span class="title function_">rej</span>(err)</span><br><span class="line">        	&#125;</span><br><span class="line">            <span class="title function_">res</span>(data)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">readFilePromise</span>(<span class="string">&#x27;test.txt&#x27;</span>).<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> &#123;<span class="variable language_">console</span>.<span class="title function_">log</span>(data)&#125;)</span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">result</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">await</span> <span class="title function_">readFilePromise</span>(<span class="string">&#x27;test.txt&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Generator"><a href="#Generator" class="headerlink" title="Generator"></a>Generator</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">run</span>(<span class="params">gen</span>) &#123;</span><br><span class="line">  <span class="keyword">var</span> iter = <span class="title function_">gen</span>(<span class="keyword">function</span> (<span class="params">err, data</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123; iter.<span class="keyword">throw</span>(err); &#125;</span><br><span class="line">    <span class="keyword">return</span> iter.<span class="title function_">next</span>(data);</span><br><span class="line">  &#125;);</span><br><span class="line">  iter.<span class="title function_">next</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">run</span>(<span class="keyword">function</span>* (resume) &#123;</span><br><span class="line">  <span class="keyword">var</span> contents = <span class="keyword">yield</span> <span class="built_in">require</span>(<span class="string">&#x27;fs&#x27;</span>).<span class="title function_">readFile</span>(<span class="string">&#x27;test.txt&#x27;</span>, resume);</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(contents);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Rx"><a href="#Rx" class="headerlink" title="Rx"></a>Rx</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 当file data被转化成Observable时你就可以使用Observable自带的所有方法</span></span><br><span class="line"><span class="keyword">let</span> readFileAsObservable = <span class="title class_">Observable</span>.<span class="title function_">bindNodeCallback</span>(<span class="function">(<span class="params"></span></span></span><br><span class="line"><span class="params"><span class="function">  path: string,</span></span></span><br><span class="line"><span class="params"><span class="function">  encoding: string,</span></span></span><br><span class="line"><span class="params"><span class="function">  callback: (error: <span class="built_in">Error</span>, buffer: Buffer) =&gt; <span class="keyword">void</span></span></span></span><br><span class="line"><span class="params"><span class="function"></span>) =&gt;</span> fs.<span class="title function_">readFile</span>(path, encoding, callback));</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> result = <span class="title function_">readFileAsObservable</span>(<span class="string">&#x27;./test.txt&#x27;</span>, <span class="string">&#x27;utf8&#x27;</span>);</span><br><span class="line">result.<span class="title function_">subscribe</span>(</span><br><span class="line">  <span class="function"><span class="params">buffer</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(buffer.<span class="title function_">toString</span>()),</span><br><span class="line">  <span class="function"><span class="params">error</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">error</span>(error)</span><br><span class="line">);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>仅仅是的文件，就有各种风格各异的解决方式，又都有各自的缺点，callback hell，Generator的死板， Promise也只是改变了callback的形式，async&#x2F;await倒是很直观的一种表达，又因为其简便易用会导致人们的滥用。Rx在代码量大的情况下的可读性不是很好，又有一定的学习成本，所以没有完美的方案，只有适合的方案。</p>
+<p>如果在读文件的基础上加一些条件，比如读两个文件，而第二个文件又依赖于第一个文件的话</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">const file1$ = readFileAsObservable(&#x27;file1.txt&#x27;);</span><br><span class="line">const file2$ = readFileAsObservable(&#x27;file2.txt&#x27;);</span><br><span class="line">file1$.concatMap(data =&gt; file2).subscribe(data =&#123;</span><br><span class="line">    console.log(data)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>一个handbook的例子很好的说明了Rx的特点</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">import &#123; of &#125; from &#x27;rxjs/observable/of&#x27;;</span><br><span class="line">import &#123; concatMap, delay, mergeMap &#125; from &#x27;rxjs/operators&#x27;;</span><br><span class="line"></span><br><span class="line">// 发出延迟值</span><br><span class="line">const source = of(2000, 1000);</span><br><span class="line">// 将内部 observable 映射成 source，当前一个完成时发出结果并订阅下一个</span><br><span class="line">const example = source.pipe(</span><br><span class="line">  concatMap(val =&gt; of(`Delayed by: $&#123;val&#125;ms`).pipe(delay(val)))</span><br><span class="line">);</span><br><span class="line">// 输出: With concatMap: Delayed by: 2000ms, With concatMap: Delayed by: 1000ms</span><br><span class="line">const subscribe = example.subscribe(val =&gt;</span><br><span class="line">  console.log(`With concatMap: $&#123;val&#125;`)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">// 展示 concatMap 和 mergeMap 之间的区别</span><br><span class="line">const mergeMapExample = source</span><br><span class="line">  .pipe(</span><br><span class="line">    // 只是为了确保 meregeMap 的日志晚于 concatMap 示例</span><br><span class="line">    delay(5000),</span><br><span class="line">    mergeMap(val =&gt; of(`Delayed by: $&#123;val&#125;ms`).pipe(delay(val)))</span><br><span class="line">  )</span><br><span class="line">  .subscribe(val =&gt; console.log(`With mergeMap: $&#123;val&#125;`));</span><br></pre></td></tr></table></figure>
+
+<p>广播在PostMessage的情况下实现多页面的广播</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">import &#123; interval &#125; from &#x27;rxjs/observable/interval&#x27;;</span><br><span class="line">import &#123; Subject &#125; from &#x27;rxjs/Subject&#x27;;</span><br><span class="line">import &#123; take, tap, multicast, mapTo &#125; from &#x27;rxjs/operators&#x27;;</span><br><span class="line"></span><br><span class="line">// 每2秒发出值并只取前5个</span><br><span class="line">const source = interval(2000).pipe(take(5));</span><br><span class="line"></span><br><span class="line">const example = source.pipe(</span><br><span class="line">  // 因为我们在下面进行了多播，所以副作用只会调用一次</span><br><span class="line">  tap(() =&gt; console.log(&#x27;Side Effect #1&#x27;)),</span><br><span class="line">  mapTo(&#x27;Result!&#x27;)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 使用 subject 订阅 source 需要调用 connect() 方法</span><br><span class="line">const multi = example.pipe(multicast(() =&gt; new Subject()));</span><br><span class="line">/*</span><br><span class="line">  多个订阅者会共享 source </span><br><span class="line">  输出:</span><br><span class="line">  &quot;Side Effect #1&quot;</span><br><span class="line">  &quot;Result!&quot;</span><br><span class="line">  &quot;Result!&quot;</span><br><span class="line">  ...</span><br><span class="line">*/</span><br><span class="line">const subscriberOne = multi.subscribe(val =&gt; console.log(val));</span><br><span class="line">const subscriberTwo = multi.subscribe(val =&gt; console.log(val));</span><br><span class="line">// 使用 subject 订阅 source</span><br><span class="line">multi.connect();</span><br></pre></td></tr></table></figure>
+
+<p>handBook 上计数器的实现方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">// </span><br><span class="line">const takeUntilFunc = (Range, current) =&gt; &#123;</span><br><span class="line">  if (Range &gt; current) &#123;</span><br><span class="line">    return val =&gt; val &lt;= Range;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    return val =&gt; val &gt;= Range;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">const positiveOrNegative = (endRange, currentNumber) =&gt; &#123;</span><br><span class="line">  if (endRange &gt; currentNumber) &#123;</span><br><span class="line">    return 1;</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    return -1;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">const renderUpdate = id =&gt; content =&gt; (document.getElementById(id).innerHTML = content);</span><br><span class="line">const input = document.getElementById(&#x27;range&#x27;);</span><br><span class="line">const updateButton = document.getElementById(&#x27;update&#x27;);</span><br><span class="line"></span><br><span class="line">const subscription = (function(currentNumber) &#123;</span><br><span class="line">  return fromEvent(updateButton, &#x27;click&#x27;).pipe(</span><br><span class="line">    map(_ =&gt; parseInt(input.value)),</span><br><span class="line">    switchMap(endRange =&gt; &#123;</span><br><span class="line">      return timer(0, 20).pipe(</span><br><span class="line">        mapTo(positiveOrNegative(endRange, currentNumber)),</span><br><span class="line">        startWith(currentNumber),</span><br><span class="line">        scan((acc, curr) =&gt; acc + curr),</span><br><span class="line">        takeWhile(takeUntilFunc(endRange, currentNumber));</span><br><span class="line">    )</span><br><span class="line">    &#125;),</span><br><span class="line">    tap(v =&gt; (currentNumber = v)),</span><br><span class="line">    startWith(currentNumber)</span><br><span class="line">  )</span><br><span class="line">    .subscribe(renderUpdate(&#x27;display&#x27;));</span><br><span class="line">&#125;)(0);</span><br></pre></td></tr></table></figure>
+
+<p>受Rx的影响更有cycle.js提出的<strong>反应式编程</strong>虽然这个概念并没有大火，但依然提出了一个新的思考</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">// cycle编写的counter</span><br><span class="line">// 让DOM操作又了Stream的加持。。</span><br><span class="line">function main(sources) &#123;</span><br><span class="line">  const decrement$ = sources.DOM</span><br><span class="line">    .select(&#x27;.decrement&#x27;).events(&#x27;click&#x27;).mapTo(-1);</span><br><span class="line"></span><br><span class="line">  const increment$ = sources.DOM</span><br><span class="line">    .select(&#x27;.increment&#x27;).events(&#x27;click&#x27;).mapTo(+1);</span><br><span class="line"></span><br><span class="line">  const action$ = xstream.merge(decrement$, increment$);</span><br><span class="line">  const count$ = action$.fold((x, y) =&gt; x + y, 0);</span><br><span class="line"></span><br><span class="line">  const vtree$ = count$.map(count =&gt;</span><br><span class="line">    div([</span><br><span class="line">      button(&#x27;.decrement&#x27;, &#x27;Decrement&#x27;),</span><br><span class="line">      button(&#x27;.increment&#x27;, &#x27;Increment&#x27;),</span><br><span class="line">      p(&#x27;Counter: &#x27; + count)</span><br><span class="line">    ])</span><br><span class="line">  );</span><br><span class="line">  return &#123; DOM: vtree$ &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>总之Rx是一支很成熟的解决方案，尤其是应对复杂度高的的场景的时候越能体现其价值。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Rx%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5"><span class="toc-number">1.</span> <span class="toc-text">Rx更进一步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="toc-number">1.0.1.</span> <span class="toc-text">异步解决方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#callback"><span class="toc-number">1.0.2.</span> <span class="toc-text">callback</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#event"><span class="toc-number">1.0.3.</span> <span class="toc-text">event</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Promise-async-await"><span class="toc-number">1.0.4.</span> <span class="toc-text">Promise &amp;&amp; async&#x2F;await</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Generator"><span class="toc-number">1.0.5.</span> <span class="toc-text">Generator</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rx"><span class="toc-number">1.0.6.</span> <span class="toc-text">Rx</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/10/03/RxDeep/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/10/03/RxDeep/&text=Rx更进一步"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/10/03/RxDeep/&is_video=false&description=Rx更进一步"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Rx更进一步&body=Check out this article: https://technologybook.tech/2017/10/03/RxDeep/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/10/03/RxDeep/&title=Rx更进一步"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/10/03/RxDeep/&name=Rx更进一步&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/10/03/RxDeep/&t=Rx更进一步"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

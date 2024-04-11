@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Express源码解析从http开始关于http的文章可以看之前写的  -&gt; 这个 到node http 模块一个最简单的http server是这样的 123456789const http &#x3D; require(&amp;#x27;http&amp;#x27;);http  .createServer((req, res) &#x3D;&gt; &amp;#123;  res.writeHead(200, &amp;#123; &amp;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Express源码解析并实现">
+<meta property="og:url" content="https://technologybook.tech/2019/06/16/express/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="Express源码解析从http开始关于http的文章可以看之前写的  -&gt; 这个 到node http 模块一个最简单的http server是这样的 123456789const http &#x3D; require(&amp;#x27;http&amp;#x27;);http  .createServer((req, res) &#x3D;&gt; &amp;#123;  res.writeHead(200, &amp;#123; &amp;">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://technologybook.tech/assets/img/ex.png">
+<meta property="og:image" content="https://technologybook.tech/assets/img/ex1.png">
+<meta property="og:image" content="https://technologybook.tech/assets/img/ex2.png">
+<meta property="article:published_time" content="2019-06-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.877Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="express">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://technologybook.tech/assets/img/ex.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Express源码解析并实现</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2019/06/23/reactSSR/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/05/15/httpNhttps/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/06/16/express/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/06/16/express/&text=Express源码解析并实现"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/06/16/express/&is_video=false&description=Express源码解析并实现"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Express源码解析并实现&body=Check out this article: https://technologybook.tech/2019/06/16/express/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/06/16/express/&name=Express源码解析并实现&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/06/16/express/&t=Express源码解析并实现"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Express%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">Express源码解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8Ehttp%E5%BC%80%E5%A7%8B"><span class="toc-number">1.1.</span> <span class="toc-text">从http开始</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%B0node-http-%E6%A8%A1%E5%9D%97"><span class="toc-number">1.2.</span> <span class="toc-text">到node http 模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Express"><span class="toc-number">1.3.</span> <span class="toc-text">Express</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AAexpress%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-number">1.3.1.</span> <span class="toc-text">一个express的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#express-%E6%BA%90%E7%A0%81%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.2.</span> <span class="toc-text">express 源码架构</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%88%91%E7%9A%84MiniExpress%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">我的MiniExpress实现</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Express源码解析并实现
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-06-15T16:00:00.000Z" class="dt-published" itemprop="datePublished">2019-06-16</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/source/">source</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/express/" rel="tag">express</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Express源码解析"><a href="#Express源码解析" class="headerlink" title="Express源码解析"></a>Express源码解析</h1><h2 id="从http开始"><a href="#从http开始" class="headerlink" title="从http开始"></a>从http开始</h2><p>关于http的文章可以看之前写的  -&gt; <a href="https://technologybook.tech/2019/05/15/httpNhttps/">这个</a></p>
+<h2 id="到node-http-模块"><a href="#到node-http-模块" class="headerlink" title="到node http 模块"></a>到node http 模块</h2><p>一个最简单的http server是这样的</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">&#x27;http&#x27;</span>);</span><br><span class="line">http</span><br><span class="line">  .<span class="title function_">createServer</span>(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">  res.<span class="title function_">writeHead</span>(<span class="number">200</span>, &#123; <span class="string">&#x27;Content-Type&#x27;</span>: <span class="string">&#x27;text/plain&#x27;</span> &#125;);</span><br><span class="line">  res.<span class="title function_">end</span>(<span class="string">&#x27;Hello World!&#x27;</span>);</span><br><span class="line">&#125;)</span><br><span class="line">  .<span class="title function_">listen</span>(<span class="number">8080</span>, <span class="string">&#x27;127.0.0.1&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`server start`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+
+
+<ol>
+<li>创建 Server instance Server extends from net</li>
+</ol>
+<p><img src="https://technologybook.tech/assets/img/ex.png" alt="image-20210321012622791"></p>
+<ol start="2">
+<li>监听request事件</li>
+</ol>
+<p><img src="https://technologybook.tech/assets/img/ex1.png" alt="image-20210321012622791"></p>
+<ol start="3">
+<li>parse TCP 数据流</li>
+<li>http parse （解析 头部&#x2F;body&#x2F;是否解析完毕）</li>
+<li>保存 IncomingMessage 和 ServerResponse 实例 通过assignSocket 发送request事件参数为 req， res</li>
+</ol>
+<h2 id="Express"><a href="#Express" class="headerlink" title="Express"></a>Express</h2><h3 id="一个express的例子"><a href="#一个express的例子" class="headerlink" title="一个express的例子"></a>一个express的例子</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> express = <span class="built_in">require</span>(<span class="string">&quot;express&quot;</span>);</span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">express</span>();</span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&quot;/&quot;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">  res.<span class="title function_">end</span>(<span class="string">&quot;Hello World!&quot;</span>);</span><br><span class="line">&#125;)</span><br><span class="line">app.<span class="title function_">listen</span>(<span class="number">8080</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="express-源码架构"><a href="#express-源码架构" class="headerlink" title="express 源码架构"></a>express 源码架构</h3><p><img src="https://technologybook.tech/assets/img/ex2.png" alt="image-20210321012622791"></p>
+<p>Express 对路由的设计遵循开放封闭，单一职责的原则，由Router负责处理与路由相关的一切问题，在Layer中分层负责path与行为的描述，</p>
+<p>Route中进行处理</p>
+<h1 id="我的MiniExpress实现"><a href="#我的MiniExpress实现" class="headerlink" title="我的MiniExpress实现"></a>我的MiniExpress实现</h1><ul>
+<li><input checked="" disabled="" type="checkbox"> middleware</li>
+<li><input checked="" disabled="" type="checkbox"> Route.use</li>
+<li><input checked="" disabled="" type="checkbox"> App route</li>
+</ul>
+<p>等基础功能。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">NextHandler</span>, <span class="title class_">Request</span>, <span class="title class_">Response</span> &#125; <span class="keyword">from</span> <span class="string">&quot;../typings/project&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Layer</span> <span class="keyword">from</span> <span class="string">&quot;./Layer&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Route</span> <span class="keyword">from</span> <span class="string">&quot;./Route&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; isMatch &#125; <span class="keyword">from</span> <span class="string">&quot;../utils/checker&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">Router</span> &#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="attr">stack</span>: <span class="title class_">Layer</span>[] = [];</span><br><span class="line">  <span class="attr">middleware</span>: &#123; <span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> &#125;[] = [];</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="title function_">handle</span>(<span class="params">req: Request, res: Response, handler: NextHandler</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">let</span> &#123; pathname &#125; = req;</span><br><span class="line">    <span class="keyword">let</span> <span class="title function_">next</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">      <span class="keyword">while</span> (<span class="variable language_">this</span>.<span class="property">middleware</span>.<span class="property">length</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123; path, handler &#125;</span><br><span class="line">        = <span class="variable language_">this</span>.<span class="property">middleware</span>.<span class="title function_">shift</span>() <span class="keyword">as</span> &#123; <span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> &#125;;</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">isMatch</span>(path, pathname)) &#123;</span><br><span class="line">          <span class="title function_">handler</span>(req, res, next);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (index &gt;= <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="property">length</span>) <span class="keyword">return</span> <span class="title function_">handler</span>(req, res, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">      &#125;);</span><br><span class="line">      <span class="keyword">let</span> layer = <span class="variable language_">this</span>.<span class="property">stack</span>[index++];</span><br><span class="line">      <span class="keyword">if</span> (layer.<span class="title function_">match</span>(pathname)) &#123;</span><br><span class="line">        layer.<span class="title function_">handleRequest</span>(req, res, next);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="title function_">next</span>();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="title function_">next</span>();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">route</span>(<span class="params">path: <span class="built_in">string</span></span>) &#123;</span><br><span class="line">    <span class="comment">// 创建处理函数</span></span><br><span class="line">    <span class="keyword">const</span> route = <span class="keyword">new</span> <span class="title class_">Route</span>();</span><br><span class="line">    <span class="comment">// 匹配path 分配处理函数</span></span><br><span class="line">    <span class="keyword">const</span> layer = <span class="keyword">new</span> <span class="title class_">Layer</span>(path, route.<span class="property">dispatch</span>);</span><br><span class="line">    layer.<span class="property">route</span> = route;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="title function_">push</span>(layer);</span><br><span class="line">    <span class="keyword">return</span> route;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">get</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  &#125;): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> currentRoute = <span class="variable language_">this</span>.<span class="title function_">route</span>(path);</span><br><span class="line">    currentRoute.<span class="title function_">get</span>(handler);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">post</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  &#125;): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> currentRoute = <span class="variable language_">this</span>.<span class="title function_">route</span>(path);</span><br><span class="line">    currentRoute.<span class="title function_">post</span>(handler);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">use</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  &#125;): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">middleware</span>.<span class="title function_">push</span>(&#123;path, handler&#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Method</span>, <span class="title class_">Request</span>, <span class="title class_">Response</span> &#125; <span class="keyword">from</span> <span class="string">&quot;../typings/project&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Route</span> <span class="keyword">from</span> <span class="string">&quot;./Route&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; isMatch &#125; <span class="keyword">from</span> <span class="string">&quot;../utils/checker&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">Layer</span> &#123;</span><br><span class="line">  <span class="attr">route</span>: <span class="title class_">Route</span> = <span class="keyword">new</span> <span class="title class_">Route</span>;</span><br><span class="line">  <span class="attr">method</span>: <span class="title class_">Method</span> = <span class="title class_">Method</span>.<span class="property">UNKNOWN</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"><span class="keyword">public</span> path: <span class="built_in">string</span>, <span class="keyword">public</span> handler: <span class="built_in">Function</span></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">path</span> = path;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">handler</span> = handler;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">match</span>(<span class="params">path: <span class="built_in">string</span></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">isMatch</span>(<span class="variable language_">this</span>.<span class="property">path</span>, path);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">handleRequest</span>(<span class="params">req: Request, res: Response, next: () =&gt; <span class="built_in">void</span></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">handler</span>(req, res, next);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Method</span>, <span class="title class_">NextHandler</span>, <span class="title class_">Request</span>, <span class="title class_">Response</span> &#125; <span class="keyword">from</span> <span class="string">&quot;../typings/project&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Layer</span> <span class="keyword">from</span> <span class="string">&quot;./Layer&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">Route</span> &#123;</span><br><span class="line">  <span class="attr">stack</span>: <span class="title class_">Layer</span>[] = [];</span><br><span class="line"></span><br><span class="line">  dispatch = <span class="function">(<span class="params">req: Request, res: Response, outNext: <span class="built_in">Function</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">const</span> <span class="title function_">next</span> = (<span class="params"></span>) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (index &gt;= <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="property">length</span>) <span class="keyword">return</span> <span class="title function_">outNext</span>();</span><br><span class="line">      <span class="keyword">let</span> layer = <span class="variable language_">this</span>.<span class="property">stack</span>[index++];</span><br><span class="line">      <span class="keyword">if</span> (layer.<span class="property">method</span> === req.<span class="property">method</span>.<span class="title function_">toUpperCase</span>()) &#123;</span><br><span class="line">        layer.<span class="title function_">handleRequest</span>(req, res, next);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="title function_">next</span>();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="title function_">next</span>();</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">get</span>(<span class="params">handler: NextHandler</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> layer = <span class="keyword">new</span> <span class="title class_">Layer</span>(<span class="string">&quot;/&quot;</span>, handler);</span><br><span class="line">    layer.<span class="property">method</span> = <span class="title class_">Method</span>.<span class="property">GET</span>;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="title function_">push</span>(layer);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">post</span>(<span class="params">handler: NextHandler</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> layer = <span class="keyword">new</span> <span class="title class_">Layer</span>(<span class="string">&quot;/&quot;</span>, handler);</span><br><span class="line">    layer.<span class="property">method</span> = <span class="title class_">Method</span>.<span class="property">POST</span>;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">stack</span>.<span class="title function_">push</span>(layer);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">AppBase</span>, <span class="title class_">NextHandler</span>, <span class="title class_">Request</span>, <span class="title class_">Response</span> &#125; <span class="keyword">from</span> <span class="string">&quot;./typings/project&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> http <span class="keyword">from</span> <span class="string">&quot;http&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">Server</span> &#125; <span class="keyword">from</span> <span class="string">&quot;net&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; requestFormatter &#125; <span class="keyword">from</span> <span class="string">&quot;./formatter/requestFormatter&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; responseFormatter &#125; <span class="keyword">from</span> <span class="string">&quot;./formatter/responseFormatter&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Router</span> <span class="keyword">from</span> <span class="string">&quot;./Router&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; isFunc &#125; <span class="keyword">from</span> <span class="string">&quot;./utils/checker&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">App</span> <span class="keyword">implements</span> <span class="title class_">AppBase</span> &#123;</span><br><span class="line">  <span class="attr">router</span>: <span class="title class_">Router</span> = <span class="keyword">new</span> <span class="title class_">Router</span>();</span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"><span class="keyword">private</span> protocol: <span class="built_in">any</span></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">protocol</span> = protocol;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">abstract</span> <span class="title function_">get</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="keyword">abstract</span> <span class="title function_">get</span>(<span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">abstract</span> <span class="title function_">post</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="keyword">abstract</span> <span class="title function_">post</span>(<span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">abstract</span> <span class="title function_">use</span>(<span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="keyword">abstract</span> <span class="title function_">use</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">listen</span>(<span class="params">...params: Parameters&lt;Server[<span class="string">&quot;listen&quot;</span>]&gt;</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> server = (<span class="variable language_">this</span>.<span class="property">protocol</span> <span class="keyword">as</span> <span class="keyword">typeof</span> http).<span class="title function_">createServer</span>(<span class="function">(<span class="params">streamReq, streamRes</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> <span class="attr">req</span>: <span class="title class_">Request</span> = <span class="title function_">requestFormatter</span>(streamReq);</span><br><span class="line">      <span class="keyword">const</span> res = <span class="title function_">responseFormatter</span>(streamRes);</span><br><span class="line">      <span class="variable language_">this</span>.<span class="property">router</span>.<span class="title function_">handle</span>(req, res, <span class="function">(<span class="params">req: Request, res: Response</span>) =&gt;</span> &#123;</span><br><span class="line">        res.<span class="title function_">end</span>(<span class="string">`Cannot find <span class="subst">$&#123;req.url&#125;</span>`</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">    server.<span class="title function_">listen</span>(...params);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">Application</span> <span class="keyword">extends</span> <span class="title class_ inherited__">App</span> &#123;</span><br><span class="line">  <span class="title function_">get</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="title function_">get</span>(<span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="title function_">get</span>(<span class="attr">path</span>: <span class="built_in">string</span> | <span class="title class_">NextHandler</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  &#125;): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isFunc</span>(path)) &#123;</span><br><span class="line">      handler = path;</span><br><span class="line">      path = <span class="string">&quot;*&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">router</span>.<span class="title function_">get</span>(path, handler);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">post</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="title function_">post</span>(<span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="title function_">post</span>(<span class="attr">path</span>: <span class="built_in">string</span> | <span class="title class_">NextHandler</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  &#125;): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isFunc</span>(path)) &#123;</span><br><span class="line">      handler = path;</span><br><span class="line">      path = <span class="string">&quot;*&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">router</span>.<span class="title function_">post</span>(path, handler);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">use</span>(<span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="title function_">use</span>(<span class="attr">path</span>: <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span>): <span class="built_in">void</span>;</span><br><span class="line">  <span class="title function_">use</span>(<span class="attr">path</span>: <span class="title class_">NextHandler</span> | <span class="built_in">string</span>, <span class="attr">handler</span>: <span class="title class_">NextHandler</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  &#125;): <span class="built_in">void</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isFunc</span>(path)) &#123;</span><br><span class="line">      handler = path;</span><br><span class="line">      path = <span class="string">&quot;*&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">router</span>.<span class="title function_">use</span>(path, handler);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> <span class="title class_">Application</span>(http);</span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&quot;/&quot;</span>, <span class="function">(<span class="params">req: Request, res: Response, next: <span class="built_in">any</span></span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;I&#x27;m in 111&quot;</span>, <span class="number">111</span>);</span><br><span class="line">  <span class="title function_">next</span>();</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&quot;/&quot;</span>, <span class="function">(<span class="params">req: Request, res: Response, next</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;I&#x27;m in 202&quot;</span>, <span class="number">2</span>);</span><br><span class="line">  res.<span class="title function_">end</span>(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">listen</span>(<span class="number">3121</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">3121</span>);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Express%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">Express源码解析</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8Ehttp%E5%BC%80%E5%A7%8B"><span class="toc-number">1.1.</span> <span class="toc-text">从http开始</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%B0node-http-%E6%A8%A1%E5%9D%97"><span class="toc-number">1.2.</span> <span class="toc-text">到node http 模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Express"><span class="toc-number">1.3.</span> <span class="toc-text">Express</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AAexpress%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="toc-number">1.3.1.</span> <span class="toc-text">一个express的例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#express-%E6%BA%90%E7%A0%81%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.2.</span> <span class="toc-text">express 源码架构</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%88%91%E7%9A%84MiniExpress%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">我的MiniExpress实现</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/06/16/express/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/06/16/express/&text=Express源码解析并实现"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/06/16/express/&is_video=false&description=Express源码解析并实现"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Express源码解析并实现&body=Check out this article: https://technologybook.tech/2019/06/16/express/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/06/16/express/&title=Express源码解析并实现"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/06/16/express/&name=Express源码解析并实现&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/06/16/express/&t=Express源码解析并实现"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

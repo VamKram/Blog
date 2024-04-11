@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="react source code屏幕刷新 屏幕刷新率一般是 16.6ms  一个完整的帧的渲染过程 input events（Blocking input events(touch&#x2F;scroll) &#x2F; non-blocking input event(click&#x2F;keypress)） timer 每一帧执行的事件(resize&#x2F;scroll&#x2F;m">
+<meta property="og:type" content="article">
+<meta property="og:title" content="react v16 源码分析">
+<meta property="og:url" content="https://technologybook.tech/2019/12/25/react_v16/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="react source code屏幕刷新 屏幕刷新率一般是 16.6ms  一个完整的帧的渲染过程 input events（Blocking input events(touch&#x2F;scroll) &#x2F; non-blocking input event(click&#x2F;keypress)） timer 每一帧执行的事件(resize&#x2F;scroll&#x2F;m">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://technologybook.tech/assets/img/3.png">
+<meta property="og:image" content="https://technologybook.tech/assets/img/3.png">
+<meta property="og:image" content="https://technologybook.tech/assets/img/5.png">
+<meta property="og:image" content="https://technologybook.tech/assets/img/4.png">
+<meta property="og:image" content="https://technologybook.tech/assets/img/1.jpeg">
+<meta property="og:image" content="https://technologybook.tech/assets/img/2.jpeg">
+<meta property="article:published_time" content="2019-12-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.878Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="react source">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://technologybook.tech/assets/img/3.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>react v16 源码分析</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2020/01/02/ast/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2019/11/21/websocket/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/12/25/react_v16/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/12/25/react_v16/&text=react v16 源码分析"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/12/25/react_v16/&is_video=false&description=react v16 源码分析"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=react v16 源码分析&body=Check out this article: https://technologybook.tech/2019/12/25/react_v16/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/12/25/react_v16/&name=react v16 源码分析&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/12/25/react_v16/&t=react v16 源码分析"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#react-source-code"><span class="toc-number">1.</span> <span class="toc-text">react source code</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%8F%E5%B9%95%E5%88%B7%E6%96%B0"><span class="toc-number">1.1.</span> <span class="toc-text">屏幕刷新</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E5%B8%A7%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">一个完整的帧的渲染过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#API-requestAnimationCallback-requestIdleCallback"><span class="toc-number">1.1.0.2.</span> <span class="toc-text">API: requestAnimationCallback &#x2F; requestIdleCallback</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fiber"><span class="toc-number">1.2.</span> <span class="toc-text">Fiber</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fiber%E5%8C%85%E6%8B%AC%E4%BB%80%E4%B9%88%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">fiber包括什么及其作用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reconciliation"><span class="toc-number">1.3.1.</span> <span class="toc-text">reconciliation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vdom"><span class="toc-number">1.3.2.</span> <span class="toc-text">vdom</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">1.3.3.</span> <span class="toc-text">执行过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="toc-number">1.3.4.</span> <span class="toc-text">双缓存机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#beginwork"><span class="toc-number">1.3.5.</span> <span class="toc-text">beginwork</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#completework"><span class="toc-number">1.4.</span> <span class="toc-text">completework</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#commitWork"><span class="toc-number">1.5.</span> <span class="toc-text">commitWork</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Diff"><span class="toc-number">1.5.1.</span> <span class="toc-text">Diff</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E7%A7%BB%E5%8A%A8%E7%9A%84%E7%AE%97%E6%B3%95"><span class="toc-number">1.5.2.</span> <span class="toc-text">节点移动的算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#commit"><span class="toc-number">1.6.</span> <span class="toc-text">commit</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hooks"><span class="toc-number">1.7.</span> <span class="toc-text">hooks</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.7.1.</span> <span class="toc-text"></span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        react v16 源码分析
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2019-12-24T16:00:00.000Z" class="dt-published" itemprop="datePublished">2019-12-25</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/react/">react</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/react-source/" rel="tag">react source</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p><img src="https://technologybook.tech/assets/img/3.png" alt="rs"></p>
+<h1 id="react-source-code"><a href="#react-source-code" class="headerlink" title="react source code"></a>react source code</h1><h2 id="屏幕刷新"><a href="#屏幕刷新" class="headerlink" title="屏幕刷新"></a>屏幕刷新</h2><blockquote>
+<p>屏幕刷新率一般是 16.6ms</p>
+</blockquote>
+<h4 id="一个完整的帧的渲染过程"><a href="#一个完整的帧的渲染过程" class="headerlink" title="一个完整的帧的渲染过程"></a>一个完整的帧的渲染过程</h4><ol>
+<li>input events（Blocking input events(touch&#x2F;scroll) &#x2F; non-blocking input event(click&#x2F;keypress)）</li>
+<li>timer</li>
+<li>每一帧执行的事件(resize&#x2F;scroll&#x2F;media query change)</li>
+<li>rAF（绘制前执行）</li>
+<li>layout(recalculate style&#x2F;update layout)</li>
+<li>paint(compositing&#x2F;paint invalidation&#x2F;record)</li>
+<li>Idle (idle callback)</li>
+</ol>
+<p><img src="https://technologybook.tech/assets/img/3.png" alt="image-20210304153048312"></p>
+<blockquote>
+<p><em><strong>v8执行js和page render 是在同一个渲染线程，因此GUI渲染和js执行是互斥的。</strong></em></p>
+</blockquote>
+<h4 id="API-requestAnimationCallback-requestIdleCallback"><a href="#API-requestAnimationCallback-requestIdleCallback" class="headerlink" title="API: requestAnimationCallback &#x2F; requestIdleCallback"></a>API: requestAnimationCallback &#x2F; requestIdleCallback</h4><blockquote>
+<p><code>requestAnimationFrame</code>: 的时间间隔与屏幕刷新率相关，rAF可以保证每一帧都只执行一次，且每一次执行的时机最优为屏幕刷新一次的时间（60fps 则为 16.6ms）；</p>
+<p><code>requestIdleCallback</code>: <strong>检测浏览器空闲并执行任务。</strong>（判断是否耗时大于当前帧执行时间，有空余即执行）</p>
+<ol>
+<li>rIC像浏览器申请时间片</li>
+<li>等待渲染布局绘制资源加载事件执行完毕</li>
+<li>分配时间片 (初始化为5ms)</li>
+</ol>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// Scheduler periodically yields in case there is other work on the main</span></span><br><span class="line"><span class="comment">// thread, like user events. By default, it yields multiple times per frame.</span></span><br><span class="line"><span class="comment">// It does not attempt to align with frame boundaries, since most tasks don&#x27;t</span></span><br><span class="line"><span class="comment">// need to be frame aligned; for those that do, use requestAnimationFrame.</span></span><br><span class="line"><span class="keyword">let</span> yieldInterval = <span class="number">5</span>;</span><br><span class="line"><span class="keyword">const</span> maxYieldInterval = <span class="number">300</span>;</span><br><span class="line"><span class="keyword">let</span> needsPaint = <span class="literal">false</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>​ 4. 归还控制权</p>
+<p>若浏览器一直繁忙，<code>requestIdleCallback</code> 注册的任务有可能一直挂起。可通过设置 <code>timeout</code>来保证超时执行。</p>
+</blockquote>
+<hr>
+<h2 id="Fiber"><a href="#Fiber" class="headerlink" title="Fiber"></a>Fiber</h2><ol>
+<li>为什么是fiber?</li>
+</ol>
+<blockquote>
+<p>为了弥补老架构基于堆栈递归不可中断导致DOM渲染不完全的问题，创造出可以中断更新在恢复的Fiber架构。</p>
+</blockquote>
+<ol start="2">
+<li>为什么不是generator function？</li>
+</ol>
+<blockquote>
+<p>generator会污染其他函数，彻底改变框架的使用方式,导致使用成本的增加。</p>
+<p>v16任务调度优先级不能很好的实现 <a target="_blank" rel="noopener" href="https://github.com/facebook/react/issues/7942#issuecomment-254987818">原因</a></p>
+</blockquote>
+<p><img src="https://technologybook.tech/assets/img/5.png" alt="Untitled Diagram "></p>
+<h2 id="fiber包括什么及其作用"><a href="#fiber包括什么及其作用" class="headerlink" title="fiber包括什么及其作用"></a>fiber包括什么及其作用</h2><ol>
+<li><strong>Tag&#x2F;type&#x2F;props</strong>: 等描述一个组件如何在页面渲染的信息。</li>
+<li><strong>effectTag&#x2F;lastEffect &#x2F; fisrtEffect &#x2F; nextEffect</strong>:  所组成的 Effect List 收集进行过副作用操作的fiber最终遍历更新。</li>
+<li><strong>hooks&#x2F;updateQuene</strong>: 在组件的中的setState和hooks的更新方式</li>
+<li><strong>expirationTime</strong>: 任务更新优先级</li>
+<li><strong>alternate</strong>: 利用双缓存进行优化更新的手段currentFiber与alternate指向的oldFiber比较（diff）。</li>
+<li><strong>child&#x2F;return&#x2F;sibling</strong>: fiber的基本结构</li>
+</ol>
+<h3 id="reconciliation"><a href="#reconciliation" class="headerlink" title="reconciliation"></a>reconciliation</h3><blockquote>
+<p>老架构: React递归的对比vdom，通过diff然后更新，在此期间js一直执行，阻塞用户操作的响应，产生卡顿的感觉。</p>
+<p>问题: 不可中断，执行栈过深时的性能问题。</p>
+<p>新架构: 基于fiber的可中断的reconciliation，react会在空闲时间片执行任务,解决了网络IO带来的用户体验问题。</p>
+</blockquote>
+<blockquote>
+<p>v15是基于堆栈的，Reconciler。先 mountComponent后updateComponennt递归向下执行。</p>
+<p>v16是链表二叉树通过EffectTag确定TAG然后对有Effect的fiber进行相应的操作统一处理完成后交给renderer处理</p>
+</blockquote>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">Fiber</span> &#123;</span><br><span class="line">    root?: <span class="literal">null</span>;</span><br><span class="line">    child?: <span class="title class_">IRoot</span>;</span><br><span class="line">    sibling?: <span class="title class_">IRoot</span>;</span><br><span class="line">    <span class="keyword">return</span>?: <span class="title class_">IRoot</span>;</span><br><span class="line">    firstEffect?: <span class="title class_">IRoot</span> | <span class="literal">null</span>,</span><br><span class="line">    lastEffect?: <span class="title class_">IRoot</span> | <span class="literal">null</span>,</span><br><span class="line">    nextEffect?: <span class="title class_">IRoot</span> | <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">interface</span> <span class="title class_">IRoot</span> <span class="keyword">extends</span> <span class="title class_">Fiber</span> &#123;</span><br><span class="line">    <span class="attr">tag</span>: <span class="built_in">symbol</span>;</span><br><span class="line">    <span class="attr">type</span>: <span class="built_in">string</span> | keyof <span class="title class_">HTMLMapElement</span> | <span class="title class_">Component</span>&lt;<span class="built_in">any</span>&gt; | <span class="title class_">Function</span>;</span><br><span class="line">    <span class="attr">props</span>: &#123;</span><br><span class="line">        <span class="attr">children</span>: <span class="title class_">ReactElement</span>[],</span><br><span class="line">        text?: <span class="built_in">string</span></span><br><span class="line">    &#125; &amp; &#123; [K <span class="keyword">in</span> <span class="built_in">string</span>]: <span class="built_in">any</span> &#125;,</span><br><span class="line">    <span class="attr">node</span>: <span class="literal">null</span> | <span class="title class_">HTMLElement</span> | <span class="title class_">Component</span>;</span><br><span class="line">    <span class="keyword">return</span>?: <span class="title class_">IRoot</span>,</span><br><span class="line">    alternate?: <span class="title class_">IRoot</span>,</span><br><span class="line">    hooks?: <span class="built_in">any</span></span><br><span class="line">    effectTag?: <span class="built_in">symbol</span> | <span class="literal">null</span>,</span><br><span class="line">    updateQueue?: <span class="title class_">UpdateQueue</span>,</span><br><span class="line">    ref?: <span class="title class_">Ref</span></span><br><span class="line">    <span class="attr">expirationTime</span>: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="vdom"><a href="#vdom" class="headerlink" title="vdom"></a>vdom</h3><blockquote>
+<p>通过js描述页面元素的方式 React.creatELement</p>
+</blockquote>
+<h3 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h3><ol>
+<li><p>从根节点的渲染调度</p>
+<ol>
+<li>diff diff两个vdom进行增量的更新创建，基于rIC实现可以暂停的比较，更新。</li>
+<li>render 生成fiber, 收集产生的side effect</li>
+<li>firstEffect 指向第一个有effect的fiber lastEffect指向最后一个有副作用的child fiber</li>
+<li>commit dom创建不能暂停</li>
+</ol>
+</li>
+<li><p>调度优先级 expirationTime</p>
+</li>
+</ol>
+<h3 id="双缓存机制"><a href="#双缓存机制" class="headerlink" title="双缓存机制"></a>双缓存机制</h3><p><img src="https://technologybook.tech/assets/img/4.png" alt="123"></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">createWorkInProgress</span>(<span class="params">current, pendingProps</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> workInProgress = current.<span class="property">alternate</span>;</span><br><span class="line">    <span class="keyword">if</span> (workInProgress === <span class="literal">null</span>) &#123;</span><br><span class="line">        workInProgress = <span class="title function_">createFiber</span>(current.<span class="property">tag</span>, pendingProps, current.<span class="property">key</span>, current.<span class="property">mode</span>);</span><br><span class="line">        workInProgress.<span class="property">elementType</span> = current.<span class="property">elementType</span>;</span><br><span class="line">        workInProgress.<span class="property">type</span> = current.<span class="property">type</span>;</span><br><span class="line">        workInProgress.<span class="property">stateNode</span> = current.<span class="property">stateNode</span>;</span><br><span class="line">        workInProgress.<span class="property">alternate</span> = current;</span><br><span class="line">        current.<span class="property">alternate</span> = workInProgress;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 第二次的更新</span></span><br><span class="line"><span class="keyword">if</span> (currentRoot &amp;&amp; currentRoot.<span class="property">alternate</span>) &#123;</span><br><span class="line">    workInProgressRoot = currentRoot.<span class="property">alternate</span>;</span><br><span class="line">    workInProgressRoot.<span class="property">alternate</span> = currentRoot;</span><br><span class="line">    <span class="keyword">if</span> (fiberRoot) workInProgressRoot.<span class="property">props</span> = fiberRoot.<span class="property">props</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 第一次更新</span></span><br><span class="line">&#125; <span class="keyword">else</span> <span class="keyword">if</span> (currentRoot) &#123;</span><br><span class="line">    <span class="keyword">if</span> (fiberRoot) &#123;</span><br><span class="line">        fiberRoot.<span class="property">alternate</span> = currentRoot;</span><br><span class="line">        workInProgressRoot = fiberRoot;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        workInProgressRoot = &#123;</span><br><span class="line">            ...currentRoot,</span><br><span class="line">            <span class="attr">alternate</span>: currentRoot,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    workInProgressRoot = fiberRoot;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (workInProgressRoot) &#123;</span><br><span class="line">    workInProgressRoot.<span class="property">firstEffect</span> = workInProgressRoot.<span class="property">lastEffect</span> = workInProgressRoot.<span class="property">nextEffect</span> = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br><span class="line">nextUnitOfWork = fiberRoot;</span><br></pre></td></tr></table></figure>
+
+<p>Fiber上的<code>alternate</code>属性是双缓存（bouble buffering）的关键，它指向一个 Fiber，创建 WorkInProgress 节点时优先取<code>alternate</code>，没有的话就创建一个新的。</p>
+<p>WorkInProgress是渲染到屏幕上fiber的最终状态</p>
+<p>创建 WorkInProgress Tree 的过程是一个 Diff 的过程，Diff的结果是一个Effect list，</p>
+<p>effect list 最终会生成一个 effect的单链表，在commit阶段会迭代这个链表，通过effectTag 来决定如何UPDATE进而确定如何处理dom。</p>
+<h3 id="beginwork"><a href="#beginwork" class="headerlink" title="beginwork"></a>beginwork</h3><blockquote>
+<p>分配到时间片后，从fiberroot开始后序遍历fiber tree，在此阶段创建fiber。</p>
+</blockquote>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构建fiber阶段</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">updateHostRoot</span>(<span class="params">fiber: IRoot</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> newChildren = fiber.<span class="property">props</span>.<span class="property">children</span>;</span><br><span class="line">    <span class="title function_">reconcileChildren</span>(fiber, newChildren);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">updateDOM</span>(<span class="params">stateNode: HTMLElement, oldProps: IRoot[<span class="string">&quot;props&quot;</span>], newProps: IRoot[<span class="string">&quot;props&quot;</span>]</span>) &#123;</span><br><span class="line">    <span class="title function_">setProps</span>(stateNode, oldProps, newProps);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createDOM</span>(<span class="params">fiber: IRoot</span>): <span class="title class_">HTMLElement</span> | <span class="literal">null</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">NODE_TEXT</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">document</span>.<span class="title function_">createTextNode</span>(fiber.<span class="property">props</span>?.<span class="property">text</span> || <span class="string">&quot;&quot;</span>) <span class="keyword">as</span> <span class="built_in">any</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">NODE_HOST</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> stateNode = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(fiber.<span class="property">type</span> <span class="keyword">as</span> keyof <span class="title class_">HTMLElementTagNameMap</span>);</span><br><span class="line">        <span class="title function_">updateDOM</span>(stateNode, &#123;&#125; <span class="keyword">as</span> <span class="built_in">any</span>, fiber.<span class="property">props</span>);</span><br><span class="line">        <span class="keyword">return</span> stateNode;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">updateHostText</span>(<span class="params">fiber: IRoot</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!fiber.<span class="property">node</span>) &#123;</span><br><span class="line">        fiber.<span class="property">node</span> = <span class="title function_">createDOM</span>(fiber)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">updateHost</span>(<span class="params">fiber: IRoot</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!fiber.<span class="property">node</span>) &#123;</span><br><span class="line">        fiber.<span class="property">node</span> = <span class="title function_">createDOM</span>(fiber)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> newChildren = fiber.<span class="property">props</span>.<span class="property">children</span>;</span><br><span class="line">    <span class="title function_">reconcileChildren</span>(fiber, newChildren);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">beginWork</span>(<span class="params">fiber: IRoot</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">ROOT</span>) &#123;</span><br><span class="line">        <span class="title function_">updateHostRoot</span>(fiber);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">NODE_TEXT</span>) &#123;</span><br><span class="line">        <span class="title function_">updateHostText</span>(fiber);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">NODE_HOST</span>) &#123;</span><br><span class="line">        <span class="title function_">updateHost</span>(fiber);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">NODE_CLASS</span>) &#123;</span><br><span class="line">        <span class="title function_">updateClassComp</span>(fiber)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">NODE_FUNCTION</span>) &#123;</span><br><span class="line">        <span class="title function_">updateFunctionComp</span>(fiber)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="completework"><a href="#completework" class="headerlink" title="completework"></a>completework</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 副作用收集</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">completeUnitOfWork</span>(<span class="params">nextUnitOfWork: IRoot</span>) &#123;</span><br><span class="line">    <span class="keyword">let</span> returnFiber = nextUnitOfWork.<span class="property">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (returnFiber) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!returnFiber.<span class="property">firstEffect</span>) &#123;</span><br><span class="line">            returnFiber.<span class="property">firstEffect</span> = nextUnitOfWork.<span class="property">firstEffect</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (nextUnitOfWork.<span class="property">lastEffect</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (returnFiber.<span class="property">lastEffect</span>) &#123;</span><br><span class="line">                returnFiber.<span class="property">lastEffect</span>.<span class="property">nextEffect</span> = nextUnitOfWork.<span class="property">firstEffect</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            returnFiber.<span class="property">lastEffect</span> = nextUnitOfWork.<span class="property">lastEffect</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">const</span> effectTag = nextUnitOfWork.<span class="property">effectTag</span></span><br><span class="line">        <span class="keyword">if</span> (effectTag) &#123;</span><br><span class="line">            <span class="keyword">if</span> (returnFiber.<span class="property">lastEffect</span>) &#123;</span><br><span class="line">                returnFiber.<span class="property">lastEffect</span>.<span class="property">nextEffect</span> = nextUnitOfWork;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                returnFiber.<span class="property">firstEffect</span> = nextUnitOfWork;</span><br><span class="line">            &#125;</span><br><span class="line">            returnFiber.<span class="property">lastEffect</span> = nextUnitOfWork;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="commitWork"><a href="#commitWork" class="headerlink" title="commitWork"></a>commitWork</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">commitWork</span>(<span class="params">fiber: IRoot</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!fiber) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">let</span> retFiber = fiber.<span class="property">return</span> <span class="keyword">as</span> <span class="title class_">IRoot</span>;</span><br><span class="line">    <span class="keyword">while</span> (retFiber.<span class="property">tag</span> !== <span class="variable constant_">NODE_HOST</span> &amp;&amp; retFiber.<span class="property">tag</span> !== <span class="variable constant_">ROOT</span> &amp;&amp; retFiber.<span class="property">tag</span> !== <span class="variable constant_">NODE_TEXT</span>) &#123;</span><br><span class="line">        retFiber = retFiber.<span class="property">return</span> <span class="keyword">as</span> <span class="title class_">IRoot</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> retDOM = retFiber.<span class="property">node</span> <span class="keyword">as</span> <span class="title class_">HTMLElement</span>;</span><br><span class="line">    <span class="keyword">if</span> (fiber.<span class="property">effectTag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">PLACEMENT</span> &amp;&amp; retDOM) &#123;</span><br><span class="line">        <span class="keyword">let</span> nextFiber = fiber;</span><br><span class="line">        <span class="keyword">if</span> (nextFiber.<span class="property">tag</span> === <span class="variable constant_">NODE_CLASS</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">while</span> (nextFiber.<span class="property">tag</span> !== <span class="variable constant_">NODE_HOST</span> &amp;&amp; nextFiber.<span class="property">tag</span> !== <span class="variable constant_">NODE_TEXT</span>) &#123;</span><br><span class="line">            nextFiber = fiber.<span class="property">child</span> <span class="keyword">as</span> <span class="title class_">IRoot</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        retDOM.<span class="title function_">appendChild</span>(nextFiber.<span class="property">node</span> <span class="keyword">as</span> <span class="title class_">HTMLElement</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (fiber.<span class="property">effectTag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">DELETION</span> &amp;&amp; retDOM) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_">commitDeletion</span>(fiber, retDOM);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (fiber.<span class="property">effectTag</span> === <span class="title class_">ReaxTypes</span>.<span class="property">UPDATE</span> &amp;&amp; retDOM) &#123;</span><br><span class="line">        <span class="keyword">if</span> (fiber.<span class="property">type</span> === <span class="variable constant_">ELEMENT_TEXT</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (fiber.<span class="property">alternate</span>?.<span class="property">props</span>.<span class="property">text</span> != fiber.<span class="property">props</span>.<span class="property">text</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (fiber.<span class="property">node</span>) &#123;</span><br><span class="line">                    (fiber.<span class="property">node</span> <span class="keyword">as</span> <span class="title class_">HTMLElement</span>).<span class="property">textContent</span> = fiber.<span class="property">props</span>.<span class="property">text</span> <span class="keyword">as</span> <span class="built_in">string</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (fiber.<span class="property">tag</span> === <span class="variable constant_">NODE_CLASS</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">            fiber.<span class="property">node</span> &amp;&amp; <span class="title function_">updateDOM</span>((fiber.<span class="property">node</span> <span class="keyword">as</span> <span class="title class_">HTMLElement</span>), fiber.<span class="property">alternate</span>?.<span class="property">props</span> || &#123;&#125; <span class="keyword">as</span> <span class="title class_">IRoot</span>[<span class="string">&quot;props&quot;</span>], fiber.<span class="property">props</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    fiber.<span class="property">effectTag</span> = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Diff"><a href="#Diff" class="headerlink" title="Diff"></a>Diff</h3><ol>
+<li>Child 类型为<code>object</code>、<code>number</code>、<code>string</code></li>
+</ol>
+<blockquote>
+<p>比较key&#x2F;type&#x2F;tag相同确定是否有可服用的statenode，如果没有直接删除生成一个新的fiber节点</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">reconcileSingleElement</span> (</span><br><span class="line">  <span class="attr">returnFiber</span>: <span class="title class_">Fiber</span>,</span><br><span class="line">  <span class="attr">currentFirstChild</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">element</span>: <span class="title class_">ReactElement</span>,</span><br><span class="line">  <span class="attr">expirationTime</span>: <span class="title class_">ExpirationTime</span>,</span><br><span class="line">): <span class="title class_">Fiber</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> key = element.<span class="property">key</span>;</span><br><span class="line">  <span class="keyword">let</span> child = currentFirstChild;</span><br><span class="line">  <span class="keyword">while</span> (child !== <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> If key === null and child.key === null, then this only applies to</span></span><br><span class="line">    <span class="comment">// the first item in the list.</span></span><br><span class="line">    <span class="keyword">if</span> (child.<span class="property">key</span> === key) &#123;</span><br><span class="line">      <span class="keyword">if</span> (</span><br><span class="line">        child.<span class="property">tag</span> === <span class="title class_">Fragment</span></span><br><span class="line">          ? element.<span class="property">type</span> === <span class="variable constant_">REACT_FRAGMENT_TYPE</span></span><br><span class="line">          : child.<span class="property">elementType</span> === element.<span class="property">type</span></span><br><span class="line">      ) &#123;</span><br><span class="line">        <span class="title function_">deleteRemainingChildren</span>(returnFiber, child.<span class="property">sibling</span>);</span><br><span class="line">        <span class="keyword">const</span> existing = <span class="title function_">useFiber</span>(</span><br><span class="line">          child,</span><br><span class="line">          element.<span class="property">type</span> === <span class="variable constant_">REACT_FRAGMENT_TYPE</span></span><br><span class="line">            ? element.<span class="property">props</span>.<span class="property">children</span></span><br><span class="line">            : element.<span class="property">props</span>,</span><br><span class="line">          expirationTime,</span><br><span class="line">        );</span><br><span class="line">        existing.<span class="property">ref</span> = <span class="title function_">coerceRef</span>(returnFiber, child, element);</span><br><span class="line">        existing.<span class="property">return</span> = returnFiber;</span><br><span class="line">        <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">          existing.<span class="property">_debugSource</span> = element.<span class="property">_source</span>;</span><br><span class="line">          existing.<span class="property">_debugOwner</span> = element.<span class="property">_owner</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> existing;</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="title function_">deleteRemainingChildren</span>(returnFiber, child);</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="title function_">deleteChild</span>(returnFiber, child);</span><br><span class="line">    &#125;</span><br><span class="line">    child = child.<span class="property">sibling</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (element.<span class="property">type</span> === <span class="variable constant_">REACT_FRAGMENT_TYPE</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> created = <span class="title function_">createFiberFromFragment</span>(</span><br><span class="line">      element.<span class="property">props</span>.<span class="property">children</span>,</span><br><span class="line">      returnFiber.<span class="property">mode</span>,</span><br><span class="line">      expirationTime,</span><br><span class="line">      element.<span class="property">key</span>,</span><br><span class="line">    );</span><br><span class="line">    created.<span class="property">return</span> = returnFiber;</span><br><span class="line">    <span class="keyword">return</span> created;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> created = <span class="title function_">createFiberFromElement</span>(</span><br><span class="line">      element,</span><br><span class="line">      returnFiber.<span class="property">mode</span>,</span><br><span class="line">      expirationTime,</span><br><span class="line">    );</span><br><span class="line">    created.<span class="property">ref</span> = <span class="title function_">coerceRef</span>(returnFiber, currentFirstChild, element);</span><br><span class="line">    created.<span class="property">return</span> = returnFiber;</span><br><span class="line">    <span class="keyword">return</span> created;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Child<code>newChild</code>类型为<code>Array</code></li>
+</ol>
+<blockquote>
+<p>因为有EffectTag，所以有限判断状态为UPDATE的节点再处理为DELECTION和PLACEMENT的节点。</p>
+<p>比较方法 type&#x2F;key不同则直接DELECTION</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">reconcileChildrenArray</span> (</span><br><span class="line">  <span class="attr">returnFiber</span>: <span class="title class_">Fiber</span>,</span><br><span class="line">  <span class="attr">currentFirstChild</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">newChildren</span>: <span class="title class_">Array</span>&lt;*&gt;,</span><br><span class="line">  <span class="attr">expirationTime</span>: <span class="title class_">ExpirationTime</span>,</span><br><span class="line">): <span class="title class_">Fiber</span> | <span class="literal">null</span> &#123;</span><br><span class="line">  <span class="comment">// This algorithm can&#x27;t optimize by searching from both ends since we</span></span><br><span class="line">  <span class="comment">// don&#x27;t have backpointers on fibers. I&#x27;m trying to see how far we can get</span></span><br><span class="line">  <span class="comment">// with that model. If it ends up not being worth the tradeoffs, we can</span></span><br><span class="line">  <span class="comment">// add it later.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Even with a two ended optimization, we&#x27;d want to optimize for the case</span></span><br><span class="line">  <span class="comment">// where there are few changes and brute force the comparison instead of</span></span><br><span class="line">  <span class="comment">// going for the Map. It&#x27;d like to explore hitting that path first in</span></span><br><span class="line">  <span class="comment">// forward-only mode and only go for the Map once we notice that we need</span></span><br><span class="line">  <span class="comment">// lots of look ahead. This doesn&#x27;t handle reversal as well as two ended</span></span><br><span class="line">  <span class="comment">// search but that&#x27;s unusual. Besides, for the two ended optimization to</span></span><br><span class="line">  <span class="comment">// work on Iterables, we&#x27;d need to copy the whole set.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// In this first iteration, we&#x27;ll just live with hitting the bad case</span></span><br><span class="line">  <span class="comment">// (adding everything to a Map) in for every insert/move.</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// If you change this code, also update reconcileChildrenIterator() which</span></span><br><span class="line">  <span class="comment">// uses the same algorithm.</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">    <span class="comment">// First, validate keys.</span></span><br><span class="line">    <span class="keyword">let</span> knownKeys = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; newChildren.<span class="property">length</span>; i++) &#123;</span><br><span class="line">      <span class="keyword">const</span> child = newChildren[i];</span><br><span class="line">      knownKeys = <span class="title function_">warnOnInvalidKey</span>(child, knownKeys);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> <span class="attr">resultingFirstChild</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span> = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">let</span> <span class="attr">previousNewFiber</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> oldFiber = currentFirstChild;</span><br><span class="line">  <span class="keyword">let</span> lastPlacedIndex = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">let</span> newIdx = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">let</span> nextOldFiber = <span class="literal">null</span>;</span><br><span class="line">  <span class="keyword">for</span> (; oldFiber !== <span class="literal">null</span> &amp;&amp; newIdx &lt; newChildren.<span class="property">length</span>; newIdx++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (oldFiber.<span class="property">index</span> &gt; newIdx) &#123;</span><br><span class="line">      nextOldFiber = oldFiber;</span><br><span class="line">      oldFiber = <span class="literal">null</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      nextOldFiber = oldFiber.<span class="property">sibling</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> newFiber = <span class="title function_">updateSlot</span>(</span><br><span class="line">      returnFiber,</span><br><span class="line">      oldFiber,</span><br><span class="line">      newChildren[newIdx],</span><br><span class="line">      expirationTime,</span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">if</span> (newFiber === <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="comment">// <span class="doctag">TODO:</span> This breaks on empty slots like null children. That&#x27;s</span></span><br><span class="line">      <span class="comment">// unfortunate because it triggers the slow path all the time. We need</span></span><br><span class="line">      <span class="comment">// a better way to communicate whether this was a miss or null,</span></span><br><span class="line">      <span class="comment">// boolean, undefined, etc.</span></span><br><span class="line">      <span class="keyword">if</span> (oldFiber === <span class="literal">null</span>) &#123;</span><br><span class="line">        oldFiber = nextOldFiber;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (shouldTrackSideEffects) &#123;</span><br><span class="line">      <span class="keyword">if</span> (oldFiber &amp;&amp; newFiber.<span class="property">alternate</span> === <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// We matched the slot, but we didn&#x27;t reuse the existing fiber, so we</span></span><br><span class="line">        <span class="comment">// need to delete the existing child.</span></span><br><span class="line">        <span class="title function_">deleteChild</span>(returnFiber, oldFiber);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    lastPlacedIndex = <span class="title function_">placeChild</span>(newFiber, lastPlacedIndex, newIdx);</span><br><span class="line">    <span class="keyword">if</span> (previousNewFiber === <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="comment">// <span class="doctag">TODO:</span> Move out of the loop. This only happens for the first run.</span></span><br><span class="line">      resultingFirstChild = newFiber;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// <span class="doctag">TODO:</span> Defer siblings if we&#x27;re not at the right index for this slot.</span></span><br><span class="line">      <span class="comment">// I.e. if we had null values before, then we want to defer this</span></span><br><span class="line">      <span class="comment">// for each null value. However, we also don&#x27;t want to call updateSlot</span></span><br><span class="line">      <span class="comment">// with the previous one.</span></span><br><span class="line">      previousNewFiber.<span class="property">sibling</span> = newFiber;</span><br><span class="line">    &#125;</span><br><span class="line">    previousNewFiber = newFiber;</span><br><span class="line">    oldFiber = nextOldFiber;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (newIdx === newChildren.<span class="property">length</span>) &#123;</span><br><span class="line">    <span class="comment">// We&#x27;ve reached the end of the new children. We can delete the rest.</span></span><br><span class="line">    <span class="title function_">deleteRemainingChildren</span>(returnFiber, oldFiber);</span><br><span class="line">    <span class="keyword">return</span> resultingFirstChild;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (oldFiber === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// If we don&#x27;t have any more existing children we can choose a fast path</span></span><br><span class="line">    <span class="comment">// since the rest will all be insertions.</span></span><br><span class="line">    <span class="keyword">for</span> (; newIdx &lt; newChildren.<span class="property">length</span>; newIdx++) &#123;</span><br></pre></td></tr></table></figure>
+
+<h3 id="节点移动的算法"><a href="#节点移动的算法" class="headerlink" title="节点移动的算法"></a>节点移动的算法</h3><p>1234 -&gt; 1423</p>
+<ol>
+<li>L(1) &#x3D;&#x3D;&#x3D; R(1) equal &#x3D;&gt; lastPlacedIndex &#x3D; Idx(1) &#x3D; 0;</li>
+<li>L(2) !&#x3D;&#x3D; R(4)  &#x3D;&gt; oldIndex &#x3D; Idx(4) &#x3D; 3 &gt; 0 &#x3D;&gt; 不动 &#x3D;&gt; lastPlacedIndex &#x3D; 3</li>
+</ol>
+<blockquote>
+<p>if (oldIndex &gt;&#x3D; lastPlacedIndex) {</p>
+<p>不动</p>
+<p>lastPlacedIndex &#x3D; oldIndex</p>
+<p>} else {</p>
+<p>移动到右边</p>
+<p>}</p>
+</blockquote>
+<ol start="3">
+<li>oldIndx(R(2)) &#x3D; 1 &lt; 3 &#x3D;&gt; 右移</li>
+<li>oldIndex(R(3)) &#x3D; 2 &lt; 3 &#x3D;&gt; 右移</li>
+</ol>
+<h2 id="commit"><a href="#commit" class="headerlink" title="commit"></a>commit</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">commitRoot</span>(<span class="params"></span>) &#123;</span><br><span class="line">    deletions.<span class="title function_">forEach</span>(commitWork);</span><br><span class="line">    <span class="keyword">let</span> fiber = workInProgressRoot?.<span class="property">firstEffect</span>;</span><br><span class="line">    <span class="keyword">while</span> (fiber) &#123;</span><br><span class="line">        <span class="title function_">commitWork</span>(fiber);</span><br><span class="line">        fiber = fiber.<span class="property">nextEffect</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    deletions.<span class="property">length</span> = <span class="number">0</span>;</span><br><span class="line">    currentRoot = workInProgressRoot;</span><br><span class="line">    workInProgressRoot = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// 源码中的处理</span></span><br><span class="line"><span class="comment">// Check if work was scheduled by one of the effects</span></span><br><span class="line"><span class="keyword">const</span> rootExpirationTime = root.<span class="property">expirationTime</span>;</span><br><span class="line"><span class="keyword">if</span> (rootExpirationTime !== <span class="title class_">NoWork</span>) &#123;</span><br><span class="line">  <span class="title function_">requestWork</span>(root, rootExpirationTime);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Flush any sync work that was scheduled by effects</span></span><br><span class="line"><span class="keyword">if</span> (!isBatchingUpdates &amp;&amp; !isRendering) &#123;</span><br><span class="line">  <span class="title function_">performSyncWork</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">commitRoot</span> (<span class="attr">root</span>: <span class="title class_">FiberRoot</span>, <span class="attr">finishedWork</span>: <span class="title class_">Fiber</span>): <span class="keyword">void</span> &#123;</span><br><span class="line">  isWorking = <span class="literal">true</span>;</span><br><span class="line">  isCommitting = <span class="literal">true</span>;</span><br><span class="line">  <span class="title function_">startCommitTimer</span>();</span><br><span class="line"></span><br><span class="line">  <span class="title function_">invariant</span>(</span><br><span class="line">    root.<span class="property">current</span> !== finishedWork,</span><br><span class="line">    <span class="string">&#x27;Cannot commit the same tree as before. This is probably a bug &#x27;</span> +</span><br><span class="line">    <span class="string">&#x27;related to the return field. This error is likely caused by a bug &#x27;</span> +</span><br><span class="line">    <span class="string">&#x27;in React. Please file an issue.&#x27;</span>,</span><br><span class="line">  );</span><br><span class="line">  <span class="keyword">const</span> committedExpirationTime = root.<span class="property">pendingCommitExpirationTime</span>;</span><br><span class="line">  <span class="title function_">invariant</span>(</span><br><span class="line">    committedExpirationTime !== <span class="title class_">NoWork</span>,</span><br><span class="line">    <span class="string">&#x27;Cannot commit an incomplete root. This error is likely caused by a &#x27;</span> +</span><br><span class="line">    <span class="string">&#x27;bug in React. Please file an issue.&#x27;</span>,</span><br><span class="line">  );</span><br><span class="line">  root.<span class="property">pendingCommitExpirationTime</span> = <span class="title class_">NoWork</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Update the pending priority levels to account for the work that we are</span></span><br><span class="line">  <span class="comment">// about to commit. This needs to happen before calling the lifecycles, since</span></span><br><span class="line">  <span class="comment">// they may schedule additional updates.</span></span><br><span class="line">  <span class="keyword">const</span> updateExpirationTimeBeforeCommit = finishedWork.<span class="property">expirationTime</span>;</span><br><span class="line">  <span class="keyword">const</span> childExpirationTimeBeforeCommit = finishedWork.<span class="property">childExpirationTime</span>;</span><br><span class="line">  <span class="keyword">const</span> earliestRemainingTimeBeforeCommit =</span><br><span class="line">    childExpirationTimeBeforeCommit &gt; updateExpirationTimeBeforeCommit</span><br><span class="line">      ? childExpirationTimeBeforeCommit</span><br><span class="line">      : updateExpirationTimeBeforeCommit;</span><br><span class="line">  <span class="title function_">markCommittedPriorityLevels</span>(root, earliestRemainingTimeBeforeCommit);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> <span class="attr">prevInteractions</span>: <span class="title class_">Set</span>&lt;<span class="title class_">Interaction</span>&gt; = (<span class="attr">null</span>: any);</span><br><span class="line">  <span class="keyword">if</span> (enableSchedulerTracing) &#123;</span><br><span class="line">    <span class="comment">// Restore any pending interactions at this point,</span></span><br><span class="line">    <span class="comment">// So that cascading work triggered during the render phase will be accounted for.</span></span><br><span class="line">    prevInteractions = __interactionsRef.<span class="property">current</span>;</span><br><span class="line">    __interactionsRef.<span class="property">current</span> = root.<span class="property">memoizedInteractions</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Reset this to null before calling lifecycles</span></span><br><span class="line">  <span class="title class_">ReactCurrentOwner</span>.<span class="property">current</span> = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> firstEffect;</span><br><span class="line">  <span class="keyword">if</span> (finishedWork.<span class="property">effectTag</span> &gt; <span class="title class_">PerformedWork</span>) &#123;</span><br><span class="line">    <span class="comment">// A fiber&#x27;s effect list consists only of its children, not itself. So if</span></span><br><span class="line">    <span class="comment">// the root has an effect, we need to add it to the end of the list. The</span></span><br><span class="line">    <span class="comment">// resulting list is the set that would belong to the root&#x27;s parent, if</span></span><br><span class="line">    <span class="comment">// it had one; that is, all the effects in the tree including the root.</span></span><br><span class="line">    <span class="keyword">if</span> (finishedWork.<span class="property">lastEffect</span> !== <span class="literal">null</span>) &#123;</span><br><span class="line">      finishedWork.<span class="property">lastEffect</span>.<span class="property">nextEffect</span> = finishedWork;</span><br><span class="line">      firstEffect = finishedWork.<span class="property">firstEffect</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      firstEffect = finishedWork;</span><br></pre></td></tr></table></figure>
+
+<h2 id="hooks"><a href="#hooks" class="headerlink" title="hooks"></a>hooks</h2><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">scheduleWorkToRoot</span>(<span class="params">fiberRoot?: IRoot</span>) &#123;</span><br><span class="line">    <span class="comment">// 第二次的更新</span></span><br><span class="line">    <span class="keyword">if</span> (currentRoot &amp;&amp; currentRoot.<span class="property">alternate</span>) &#123;</span><br><span class="line">        workInProgressRoot = currentRoot.<span class="property">alternate</span>;</span><br><span class="line">        workInProgressRoot.<span class="property">alternate</span> = currentRoot;</span><br><span class="line">        <span class="keyword">if</span> (fiberRoot) workInProgressRoot.<span class="property">props</span> = fiberRoot.<span class="property">props</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 第一次更新</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (currentRoot) &#123;</span><br><span class="line">        <span class="keyword">if</span> (fiberRoot) &#123;</span><br><span class="line">            fiberRoot.<span class="property">alternate</span> = currentRoot;</span><br><span class="line">            workInProgressRoot = fiberRoot;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            workInProgressRoot = &#123;</span><br><span class="line">                ...currentRoot,</span><br><span class="line">                <span class="attr">alternate</span>: currentRoot,</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        workInProgressRoot = fiberRoot;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (workInProgressRoot) &#123;</span><br><span class="line">        workInProgressRoot.<span class="property">firstEffect</span> = workInProgressRoot.<span class="property">lastEffect</span> = workInProgressRoot.<span class="property">nextEffect</span> = <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    nextUnitOfWork = fiberRoot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>以下为新版本的一些更新（from kasong blog）</p>
+<p><img src="https://technologybook.tech/assets/img/1.jpeg" alt="DZQFUlCU0AAkFI5"></p>
+<p><img src="https://technologybook.tech/assets/img/2.jpeg" alt="DZQFWC2VAAEHUln"></p>
+<blockquote>
+<p>在<code>processUpdateQueue</code>方法中，<code>shared.pending</code>环状链表会被剪开并拼接在<code>baseUpdate</code>后面。(from kasong blog)</p>
+<p>优先级高的会在updateQueue.shared.pending 中形成环，</p>
+<p>第一阶段 按链表的顺序</p>
+<p>第二阶段 按优先级</p>
+</blockquote>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#react-source-code"><span class="toc-number">1.</span> <span class="toc-text">react source code</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B1%8F%E5%B9%95%E5%88%B7%E6%96%B0"><span class="toc-number">1.1.</span> <span class="toc-text">屏幕刷新</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E5%B8%A7%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B"><span class="toc-number">1.1.0.1.</span> <span class="toc-text">一个完整的帧的渲染过程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#API-requestAnimationCallback-requestIdleCallback"><span class="toc-number">1.1.0.2.</span> <span class="toc-text">API: requestAnimationCallback &#x2F; requestIdleCallback</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Fiber"><span class="toc-number">1.2.</span> <span class="toc-text">Fiber</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fiber%E5%8C%85%E6%8B%AC%E4%BB%80%E4%B9%88%E5%8F%8A%E5%85%B6%E4%BD%9C%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">fiber包括什么及其作用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#reconciliation"><span class="toc-number">1.3.1.</span> <span class="toc-text">reconciliation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#vdom"><span class="toc-number">1.3.2.</span> <span class="toc-text">vdom</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="toc-number">1.3.3.</span> <span class="toc-text">执行过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8C%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="toc-number">1.3.4.</span> <span class="toc-text">双缓存机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#beginwork"><span class="toc-number">1.3.5.</span> <span class="toc-text">beginwork</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#completework"><span class="toc-number">1.4.</span> <span class="toc-text">completework</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#commitWork"><span class="toc-number">1.5.</span> <span class="toc-text">commitWork</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Diff"><span class="toc-number">1.5.1.</span> <span class="toc-text">Diff</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%82%E7%82%B9%E7%A7%BB%E5%8A%A8%E7%9A%84%E7%AE%97%E6%B3%95"><span class="toc-number">1.5.2.</span> <span class="toc-text">节点移动的算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#commit"><span class="toc-number">1.6.</span> <span class="toc-text">commit</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hooks"><span class="toc-number">1.7.</span> <span class="toc-text">hooks</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.7.1.</span> <span class="toc-text"></span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2019/12/25/react_v16/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2019/12/25/react_v16/&text=react v16 源码分析"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2019/12/25/react_v16/&is_video=false&description=react v16 源码分析"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=react v16 源码分析&body=Check out this article: https://technologybook.tech/2019/12/25/react_v16/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2019/12/25/react_v16/&title=react v16 源码分析"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2019/12/25/react_v16/&name=react v16 源码分析&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2019/12/25/react_v16/&t=react v16 源码分析"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Rxjs 总结（一） 操作符汇总 在Rx的世界发生的一切现象都是围绕着数据流展开的，数据流以Observable对象的的形式存在，而对Rx的应用实际就是使用操作符对数据流进行操作。按照使用方式，大体上可以将操作符划分为四类，分别是创建类，合并类，过滤类，转化类操作符。  创建类操作符 顾名思义，创建类数据流的产出是一个Observable对象。  一. 创建同步数据流create :create的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rxjs 总结">
+<meta property="og:url" content="https://technologybook.tech/2017/09/09/RxjsSummary/index.html">
+<meta property="og:site_name" content="Mark Mav">
+<meta property="og:description" content="Rxjs 总结（一） 操作符汇总 在Rx的世界发生的一切现象都是围绕着数据流展开的，数据流以Observable对象的的形式存在，而对Rx的应用实际就是使用操作符对数据流进行操作。按照使用方式，大体上可以将操作符划分为四类，分别是创建类，合并类，过滤类，转化类操作符。  创建类操作符 顾名思义，创建类数据流的产出是一个Observable对象。  一. 创建同步数据流create :create的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/2000/1*gD37OB2-PtMqZdk3X1YnEQ.png">
+<meta property="article:published_time" content="2017-09-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-10T17:46:25.876Z">
+<meta property="article:author" content="Mark Ma">
+<meta property="article:tag" content="rxjs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn-images-1.medium.com/max/2000/1*gD37OB2-PtMqZdk3X1YnEQ.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Rxjs 总结</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2017/10/03/RxDeep/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2017/07/19/Redux%20Middleware/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/09/09/RxjsSummary/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/09/09/RxjsSummary/&text=Rxjs 总结"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/09/09/RxjsSummary/&is_video=false&description=Rxjs 总结"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Rxjs 总结&body=Check out this article: https://technologybook.tech/2017/09/09/RxjsSummary/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/09/09/RxjsSummary/&name=Rxjs 总结&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/09/09/RxjsSummary/&t=Rxjs 总结"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Rxjs-%E6%80%BB%E7%BB%93%EF%BC%88%E4%B8%80%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">Rxjs 总结（一）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%E6%B1%87%E6%80%BB"><span class="toc-number">2.</span> <span class="toc-text">操作符汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%B1%BB%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.1.</span> <span class="toc-text">创建类操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80-%E5%88%9B%E5%BB%BA%E5%90%8C%E6%AD%A5%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">2.1.0.1.</span> <span class="toc-text">一. 创建同步数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C-%E5%88%9B%E5%BB%BA%E5%BC%82%E6%AD%A5%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">2.1.0.2.</span> <span class="toc-text">二. 创建异步数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89-%E6%8A%8A%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%8C%96%E4%B8%BAObservable"><span class="toc-number">2.1.0.3.</span> <span class="toc-text">三. 把其他类型的数据转化为Observable</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B-%E5%85%B6%E4%BB%96"><span class="toc-number">2.1.0.4.</span> <span class="toc-text">四. 其他</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E7%B1%BB%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.2.</span> <span class="toc-text">合并类操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%85%E5%8A%A9%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.3.</span> <span class="toc-text">辅助操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">2.4.</span> <span class="toc-text">过滤数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E5%8C%96%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.5.</span> <span class="toc-text">转化操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-number">2.6.</span> <span class="toc-text">异常处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%92%AD"><span class="toc-number">2.7.</span> <span class="toc-text">多播</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheduler"><span class="toc-number">2.8.</span> <span class="toc-text">Scheduler</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Rxjs 总结
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Mark Ma</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2017-09-08T16:00:00.000Z" class="dt-published" itemprop="datePublished">2017-09-09</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/reactive-programming/">reactive programming</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/rxjs/" rel="tag">rxjs</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Rxjs-总结（一）"><a href="#Rxjs-总结（一）" class="headerlink" title="Rxjs 总结（一）"></a>Rxjs 总结（一）</h1><p><img src="https://cdn-images-1.medium.com/max/2000/1*gD37OB2-PtMqZdk3X1YnEQ.png" alt="rx"></p>
+<h1 id="操作符汇总"><a href="#操作符汇总" class="headerlink" title="操作符汇总"></a>操作符汇总</h1><blockquote>
+<p>在Rx的世界发生的一切现象都是围绕着数据流展开的，数据流以Observable对象的的形式存在，而对Rx的应用实际就是使用操作符对数据流进行操作。按照使用方式，大体上可以将操作符划分为四类，分别是创建类，合并类，过滤类，转化类操作符。</p>
+</blockquote>
+<h2 id="创建类操作符"><a href="#创建类操作符" class="headerlink" title="创建类操作符"></a>创建类操作符</h2><blockquote>
+<p>顾名思义，创建类数据流的产出是一个Observable对象。</p>
+</blockquote>
+<h4 id="一-创建同步数据流"><a href="#一-创建同步数据流" class="headerlink" title="一. 创建同步数据流"></a>一. 创建同步数据流</h4><p><strong>create</strong> :create的本质是直接调用Observable的构造函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="property">create</span> = <span class="keyword">function</span>(<span class="params">subscribe</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Observable</span>(subscribe)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p> <strong>of</strong>  : 利用of操作符可以轻松产生包含给定数据集合的Observable对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">//output: 1,2,3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>range</strong> : 返回一定范围上，以第一个参数为起点，持续加一作为数据的Observable对象</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">range</span>(<span class="number">1</span>,<span class="number">100</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">//output: 1......100</span></span><br><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">range</span>(<span class="number">1.5</span>,<span class="number">100</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">//output: 1.5,2.5,3.5....100.5</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>generate</strong>  : 类似于for循环，包含条件判断，递增值设置，返回结果规则，创建一组Observable。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">generate</span>(<span class="number">2</span>,v &lt;= <span class="number">10</span>, <span class="function"><span class="params">v</span> =&gt;</span> v+<span class="number">2</span>, <span class="function"><span class="params">v</span> =&gt;</span> v**<span class="number">2</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output 4, 16, 36, 64, 100</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>repeat</strong> ： repeat操作符是一个实例操作符，能够复制上游的Observable中的数据若干次，使用repeat操作符实际上是将Observable订阅了若干次	。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">repeat</span>(<span class="number">3</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output 1,2,3,1,2,3,1,2,3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>empty</strong> : 产生一个空的直接完结的Observable对象。</p>
+<p><strong>throw</strong> ： 产生一个直接抛出错误的Observable对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="keyword">throw</span>(<span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;Test&#x27;</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>, <span class="variable language_">console</span>.<span class="property">log</span>, <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;complete&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment">// output complete </span></span><br><span class="line"><span class="comment">// Error: Test</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>never</strong> : 产生一个既不抛错也不完结，也没有什么动作，就那么呆着的一个Observable。。。。。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">generate</span>(<span class="number">2</span>,<span class="function"><span class="params">v</span> =&gt;</span> v &lt;= <span class="number">10</span>, <span class="function"><span class="params">v</span> =&gt;</span> v+<span class="number">2</span>, <span class="function"><span class="params">v</span> =&gt;</span> v**<span class="number">2</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output 4, 16, 36, 64, 100</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="二-创建异步数据流"><a href="#二-创建异步数据流" class="headerlink" title="二. 创建异步数据流"></a>二. 创建异步数据流</h4><p><strong>interval</strong> ： 创建出一个根据设置时间递增的Observable对象，interval不会主动停止，需要下游调用complete才会终止。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output 1，2，3.....</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>timer</strong> ： （时间&#x2F;毫秒数, ？时间间隔）&#x3D;&gt; 若没有第二个参数，timer会在指定时间返回0，若有第二个参数则以第一个参数为起点，第二个参数为时间间隔，持续产生一个递增的Observable对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">timer</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() + <span class="number">1000</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output 0</span></span><br><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">timer</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() + <span class="number">1000</span>, <span class="number">1000</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output 0, 1, 2, 3, 4</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="三-把其他类型的数据转化为Observable"><a href="#三-把其他类型的数据转化为Observable" class="headerlink" title="三. 把其他类型的数据转化为Observable"></a>三. 把其他类型的数据转化为Observable</h4><p><strong>from</strong> : 可以把任何js对象转化为Observable对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">from</span>([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 1, 2, 3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>fromPromise</strong> : 将promise类型的对象转化为Observable 对象；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">fromPromise</span>(<span class="title class_">Promise</span>.<span class="title function_">resolve</span>(<span class="string">&quot;test&quot;</span>)).<span class="title function_">map</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="string">`hello, <span class="subst">$&#123;v&#125;</span>`</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// output: hello test</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>fromEvent</strong> : 将DOM事件，或nodejs的event对象转化为Observable；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">fromEvent</span>(<span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;app&#x27;</span>), <span class="string">&#x27;click&#x27;</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// node </span></span><br><span class="line"><span class="keyword">const</span> emitter = <span class="keyword">new</span> <span class="title class_">EventEmitter</span>();</span><br><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">fromEvent</span>(emitter, <span class="string">&#x27;test&#x27;</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line">emitter.<span class="title function_">emit</span>(<span class="string">&#x27;msg&#x27;</span>, <span class="number">1</span>);</span><br><span class="line"><span class="comment">// output: 1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="四-其他"><a href="#四-其他" class="headerlink" title="四. 其他"></a>四. 其他</h4><p><strong>repeatWhen</strong> ： 相比于repeat可控的重复订阅上游。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">repeatWhen</span>(<span class="function">(<span class="params">notifier$</span>) =&gt;</span> notifier$.<span class="title function_">delay</span>(<span class="number">1000</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output: 1,2,3  1,2,3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>defer</strong> : 延迟Observable创建，仅在被订阅的时候创建。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">fetchData</span> = (<span class="params"></span>) =&gt; <span class="title class_">Observable</span>.<span class="title function_">ajax</span>(url);</span><br><span class="line"><span class="keyword">const</span> source$ = <span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">defer</span>(fetchData);</span><br><span class="line"><span class="comment">// 仅当source被订阅时才发出ajax请求</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="合并类操作符"><a href="#合并类操作符" class="headerlink" title="合并类操作符"></a>合并类操作符</h2><blockquote>
+<p>随着需求的复杂化，单一的操作符很难满足需求，因此操作符之间的组合让Rx发挥更大的威力。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th align="left">操作符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>把多个数据流以先到先得的方式合并</td>
+<td align="left">merge， mergeAll</td>
+</tr>
+<tr>
+<td>把多个数据流首尾相接的方式合并</td>
+<td align="left">concat，concatAll</td>
+</tr>
+<tr>
+<td>把多个数据流以一一对应的方式合并</td>
+<td align="left">zip，zipAll</td>
+</tr>
+<tr>
+<td>持续合并多个数据流中最新产生的数据</td>
+<td align="left">combineLatest， combineAll, withLatestFrom</td>
+</tr>
+<tr>
+<td>从多个数据流中选取第一个产生内容的数据流</td>
+<td align="left">race</td>
+</tr>
+<tr>
+<td>在数据流前面添加一个指定数据</td>
+<td align="left">startWith</td>
+</tr>
+<tr>
+<td>只获取多个数据流最后产生的那个数据</td>
+<td align="left">forkJoin</td>
+</tr>
+<tr>
+<td>从高阶数据流中切换数据源</td>
+<td align="left">switch， exhaust</td>
+</tr>
+</tbody></table>
+<p><strong>concat</strong> ： 首尾相接</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">concat</span>(<span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output: 1,2,3,4,5,6</span></span><br><span class="line"><span class="comment">// 如果Observable对象没有complete则永远不会concat到下一个Observable</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>merge</strong> ： 先到先得</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mouseUp$ = <span class="title function_">fromEvent</span>(<span class="variable language_">document</span>, <span class="string">&#x27;mouseup&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> mouseDown$ = <span class="title function_">fromEvent</span>(<span class="variable language_">document</span>, <span class="string">&#x27;modedown&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> source$ = <span class="title function_">merge</span>(mouse$, mouseDown$);</span><br><span class="line"><span class="comment">// 鼠标点击则触发订阅的发生</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">*@params Observable</span></span><br><span class="line"><span class="comment">*@params Observable</span></span><br><span class="line"><span class="comment">*@params number &#123;可容纳Observable的数量&#125;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="comment">// 常用作合并异步数据流，http request， dom event等。</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>zip</strong> ： 一一对应</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//zip 会将上游数据转化为数组形式</span></span><br><span class="line"><span class="comment">// 只要zip上游任何一个Observable完结， zip就会完结</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">zip</span>(<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>), <span class="title function_">of</span>(<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;c&#x27;</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output [1,a], [2,b], [3,c]</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>combineLatest</strong> ： 合并最后一个数据</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> run1$ = <span class="title function_">timer</span>(<span class="number">500</span>, <span class="number">1000</span>);</span><br><span class="line"><span class="keyword">const</span> run2$ = <span class="title function_">timer</span>(<span class="number">1000</span>, <span class="number">1000</span>);</span><br><span class="line"><span class="title function_">combineLatest</span>(run1$, run2$).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: [0,1], [1,1]...</span></span><br><span class="line"><span class="comment">//每隔500毫秒产出一次数据， 最新最近有数据流流过则触发combineLatest的subscribe</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>withLatestForm</strong> : 仅根据上游的单一数据源向下游推送数据</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> timer1$ = <span class="title function_">timer</span>(<span class="number">0</span>, <span class="number">1000</span>);</span><br><span class="line"><span class="keyword">const</span> timer2$ = <span class="title function_">timer</span>(<span class="number">500</span>, <span class="number">1000</span>);</span><br><span class="line"><span class="title function_">withLatestForm</span>(timer1$, timer2$).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: [1, 0], [2, 1]...</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>race</strong> :类似Promise.race，仅处理最先到达的Observable</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> timer1$ = <span class="title function_">timer</span>(<span class="number">0</span>, <span class="number">1000</span>);</span><br><span class="line"><span class="keyword">const</span> timer2$ = <span class="title function_">timer</span>(<span class="number">500</span>, <span class="number">1000</span>);</span><br><span class="line"><span class="title function_">race</span>(timer1$, timer2$).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// 仅处理由timer$产出的Observable对象</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>startWith</strong> ： 在被订阅时先突出一定的数据</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> timer1$ = <span class="title function_">timer</span>(<span class="number">0</span>, <span class="number">1000</span>).<span class="title function_">startWith</span>(<span class="string">&#x27;start&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> timer2$ = <span class="title function_">timer</span>(<span class="number">500</span>, <span class="number">1000</span>);</span><br><span class="line"><span class="title function_">race</span>(timer1$, timer2$).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: start 0 1 2</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>forkJoin</strong> : 等待所有Observable对象处理完结，选取每个最后一个对象传递给下游。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> timer1$ = <span class="title function_">timer</span>(<span class="number">0</span>, <span class="number">1000</span>).<span class="title function_">take</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">const</span> timer2$ = <span class="title function_">timer</span>(<span class="number">500</span>, <span class="number">1000</span>).<span class="title function_">take</span>(<span class="number">3</span>);</span><br><span class="line"><span class="title function_">forkJoin</span>(timer1$, timer2$).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">//output: 0, 2</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>switch</strong>： 总是切换到最新的内部Observable对象获取数据；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> stream$ = <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">take</span>(<span class="number">2</span>).<span class="title function_">map</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1500</span>).<span class="title function_">map</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="string">`<span class="subst">$&#123;x&#125;</span>,<span class="subst">$&#123;y&#125;</span>`</span>).<span class="title function_">take</span>(<span class="number">2</span>));</span><br><span class="line"><span class="keyword">const</span> result = stream$.<span class="title function_">switch</span>();</span><br><span class="line"><span class="comment">// output: 1,0 1,1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>exhaust</strong> : 耗尽当前Observable之前不会切换到下一个；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> stream$ = <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">take</span>(<span class="number">2</span>).<span class="title function_">map</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1500</span>).<span class="title function_">map</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="string">`<span class="subst">$&#123;x&#125;</span>,<span class="subst">$&#123;y&#125;</span>`</span>).<span class="title function_">take</span>(<span class="number">2</span>));</span><br><span class="line"><span class="keyword">const</span> result = stream$.<span class="title function_">exhaust</span>();</span><br><span class="line"><span class="comment">// output: 0,0 0,1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="辅助操作符"><a href="#辅助操作符" class="headerlink" title="辅助操作符"></a>辅助操作符</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>操作符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>统计数据流中所有数据的个数</td>
+<td>count</td>
+</tr>
+<tr>
+<td>获得数据流中最大和最小的数据</td>
+<td>Max, min</td>
+</tr>
+<tr>
+<td>对数据流传输数据进行规约操作</td>
+<td>reduce</td>
+</tr>
+<tr>
+<td>判断是否所有数据满足判断条件</td>
+<td>every</td>
+</tr>
+<tr>
+<td>找到的一个满足判定条件的数据</td>
+<td>Find, findIndex</td>
+</tr>
+<tr>
+<td>判断一个数据流是否不包含任何数据</td>
+<td>isEmpty</td>
+</tr>
+<tr>
+<td>如果一个数据流为空就默认产生一个指定数据</td>
+<td>defaultIfEmpty</td>
+</tr>
+</tbody></table>
+<p><strong>count</strong> ： 统计上游Observable对象吐出的所有数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">timer</span>(<span class="number">1000</span>).<span class="title function_">concat</span>(<span class="title class_">Observable</span>.<span class="title function_">timer</span>(<span class="number">100</span>)).<span class="title function_">count</span>();</span><br><span class="line"><span class="comment">//output: 2</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">timer</span>(<span class="number">1000</span>).<span class="title function_">concat</span>(<span class="title class_">Observable</span>.<span class="title function_">timer</span>(<span class="number">100</span>), <span class="title class_">Observable</span>.<span class="title function_">timer</span>(<span class="number">100</span>)).<span class="title function_">count</span>();</span><br><span class="line"><span class="comment">// output: 3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>max， min</strong> ： 获得Observable对象的最大值和最小值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">min</span>(<span class="function">(<span class="params">a,b</span>) =&gt;</span> a - b)</span><br><span class="line"><span class="comment">// output: 1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>reduce</strong> : 规约统计，类似于JavaScript的数组方法reduce。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">reduce</span>(<span class="function">(<span class="params">acc, curr</span>) =&gt;</span>acc + curr).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">//output: 6</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>every</strong> ：类似数组方法every，当所有的Observable对象满足某个条件时，返回true，否则false；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">every</span>(<span class="function">(<span class="params">x</span>) =&gt;</span> x &gt; <span class="number">2</span>)</span><br><span class="line"><span class="comment">// output: false</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>find，findIndex</strong> ：类似数组方法；</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">find</span>(<span class="function">(<span class="params">x</span>) =&gt;</span> x &gt; <span class="number">2</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 3</span></span><br><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">findIndex</span>(<span class="function">(<span class="params">x</span>) =&gt;</span> x &gt; <span class="number">2</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 2</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>isEmpty</strong> ：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">create</span>(<span class="function"><span class="params">observer</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> observer.<span class="title function_">complete</span>(<span class="number">1</span>), <span class="number">1000</span>);</span><br><span class="line">&#125;).<span class="title function_">isEmpty</span>().<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 一秒后。。 true</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>defaultIfEmpty</strong> ：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Rx</span>.<span class="property">Observable</span>.<span class="title function_">create</span>(<span class="function"><span class="params">observer</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> observer.<span class="title function_">complete</span>(<span class="number">1</span>), <span class="number">1000</span>);</span><br><span class="line">&#125;).<span class="title function_">defaultIfEmpty</span>().<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 一秒后。。 null</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="过滤数据流"><a href="#过滤数据流" class="headerlink" title="过滤数据流"></a>过滤数据流</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>操作符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>过滤掉不满足条件的操作符</td>
+<td>filter</td>
+</tr>
+<tr>
+<td>获得满足条件的第一个数据</td>
+<td>first</td>
+</tr>
+<tr>
+<td>获得满足判断条件的最后一个条件</td>
+<td>last</td>
+</tr>
+<tr>
+<td>从数据流中取出最先出现的若干年数据</td>
+<td>take</td>
+</tr>
+<tr>
+<td>从数据流中取出最后出现的若干数据</td>
+<td>takeLast</td>
+</tr>
+<tr>
+<td>从数据流中选取数据直到某种情况发生</td>
+<td>takeWhile，takeUntil</td>
+</tr>
+<tr>
+<td>从数据流中忽略最先出现的若干数据</td>
+<td>skip</td>
+</tr>
+<tr>
+<td>从数据流中忽略数据直到某种情况发生</td>
+<td>skip， skipUntil</td>
+</tr>
+<tr>
+<td>基于时间的数据流量筛选</td>
+<td>throttleTime, debounceTime, auditTime</td>
+</tr>
+<tr>
+<td>基于数据内容的数据流量筛选</td>
+<td>throttle，debounce，audit</td>
+</tr>
+<tr>
+<td>基于采样方式的数据流量筛选</td>
+<td>sample，sanpleTime</td>
+</tr>
+<tr>
+<td>删除重复的数据</td>
+<td>distinct</td>
+</tr>
+<tr>
+<td>删除重复的连续数据</td>
+<td>distinceUntilChanged， distinctUntilKyChanged</td>
+</tr>
+<tr>
+<td>忽略数据流中的所有数据</td>
+<td>ignoreElements</td>
+</tr>
+<tr>
+<td>只选取指定出现位置的数据</td>
+<td>elementAt</td>
+</tr>
+<tr>
+<td>判断是否只有一个数据满足判定条件</td>
+<td>single</td>
+</tr>
+</tbody></table>
+<p><strong>filter</strong> ：类似数组的filter方法，过滤掉不满足条件的数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">filter</span>(<span class="function"><span class="params">v</span> =&gt;</span> v%<span class="number">2</span> == <span class="number">0</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 2</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>first</strong> : 满足条件的第一个数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">first</span>(<span class="function"><span class="params">v</span> =&gt;</span> v%<span class="number">3</span> == <span class="number">0</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 3</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">first</span>().<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>last</strong> ： 与first相反。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">last</span>(<span class="function"><span class="params">v</span> =&gt;</span> v%<span class="number">3</span> == <span class="number">0</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 3</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">last</span>().<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>take，takeLast，takeWhile， takeUntil</strong> ： 从数据流中取出多个数据，或按照条件中取出多个数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>，<span class="number">4</span>).<span class="title function_">take</span>(<span class="number">3</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 1，2，3</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">takeLast</span>(<span class="number">3</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 2,3,4</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">takeWhile</span>(<span class="function"><span class="params">x</span> =&gt;</span> x &lt; <span class="number">2</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 1</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">takeUntil</span>(<span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">2500</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// 需要另行订阅高阶Observable</span></span><br><span class="line"><span class="comment">// output: 0,1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>**skip ** ：跳过前n个</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">skip</span>(<span class="number">1</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 2,3</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>skipWhile, skipUntil</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">skipWhile</span>(<span class="function"><span class="params">v</span> =&gt;</span> v%<span class="number">2</span> == <span class="number">0</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output: 1,2,3,4,5,6.....</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">takeUntil</span>(<span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">2500</span>)).<span class="title function_">subscribe</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;I&#x27;m in v&quot;</span>, v))</span><br><span class="line"><span class="comment">// output 1,2,3,4</span></span><br><span class="line"><span class="comment">// takeUntile skipUntil 行为相反</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>throttleTime</strong> ： 在限定时间范围内，从上游向下游传递数据的个数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">throttleTime</span>(<span class="number">2000</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 0, 2, 4, 6.....</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>debounceTime</strong> : 让传递给下游数据间隔不能够小雨给定时间。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">filter</span>(<span class="function"><span class="params">v</span> =&gt;</span> v % <span class="number">3</span> === <span class="number">0</span>).<span class="title function_">debounceTime</span>(<span class="number">2000</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 0, 3, 6.....</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>throttle</strong> : 根据duorationSelector触发的时机来传递上游的值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">throttle</span>(<span class="function"><span class="params">v</span> =&gt;</span> &#123;</span><br><span class="line">          <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;v&quot;</span>, v);</span><br><span class="line">          <span class="keyword">return</span> <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">2000</span>);</span><br><span class="line">        &#125;).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output: v0 0 , v2 2.....</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>debounce</strong> : 根据duorationSelector触发的时机来传递上游的值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">debounce</span>(<span class="function"><span class="params">v</span> =&gt;</span> &#123;</span><br><span class="line">          <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;v&quot;</span>, v);</span><br><span class="line">          <span class="keyword">return</span> <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">2000</span>);</span><br><span class="line">        &#125;).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>)</span><br><span class="line"><span class="comment">// output: 时间间隔总有数据产生所以永远不会打印数据</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>auditTime， audit</strong> ： 与throttle类似但是传递的是最后一个数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">auditTime</span>(<span class="number">3000</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 2, 5, 8,10</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>sample, sampleTime</strong>: 根据规则在一个范围内取一个数据抛弃其他数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">sampleTime</span>(<span class="number">3000</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output： 1,4,7,10,13...</span></span><br><span class="line"><span class="comment">// sample 会在接收到notifer$产生数据后采集最后一个数据传递给下游</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>distinct</strong>： 只返回从没有出现过的数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">6</span>).<span class="title function_">distinct</span>().<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 0,1,2,3,4,5,6</span></span><br><span class="line"><span class="comment">// @params func rule</span></span><br><span class="line"><span class="comment">// @params Observable flush </span></span><br><span class="line"><span class="comment">// 理解为去重</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>distinctUntilChanged， distinctUntilKeyChanged</strong> ： 删除掉和上一个相同的数据。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">1</span>).<span class="title function_">distinctUntilChanged</span>().<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 0,1,2,3,4,5,6,1</span></span><br><span class="line"><span class="comment">// @params func rule 判断对象相等的规则</span></span><br><span class="line"><span class="comment">// 理解为去重</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="转化操作符"><a href="#转化操作符" class="headerlink" title="转化操作符"></a>转化操作符</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>操作符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>将每个元素映射函数产生新的数据</td>
+<td>map</td>
+</tr>
+<tr>
+<td>将数据流中每个元素映射为同一数据</td>
+<td>mapTo</td>
+</tr>
+<tr>
+<td>提取数据流中每个数据的某个字段</td>
+<td>pluck</td>
+</tr>
+<tr>
+<td>产生高阶ObservabTime,bule对象</td>
+<td>windowTime, windowCount,windowWhen,windowToggle,window</td>
+</tr>
+<tr>
+<td>产生数组构成的数据流</td>
+<td>bufferTime,bufferCount,bufferWhen,bufferToggle,buffer</td>
+</tr>
+<tr>
+<td>映射产生高阶Observable对象并合并</td>
+<td>concatMap, mergeMap, switchMap, exhaustMap</td>
+</tr>
+<tr>
+<td>产生规约运算结果组成的数据流</td>
+<td>scan， mergeScan</td>
+</tr>
+</tbody></table>
+<p><strong>map</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> func = <span class="keyword">function</span>(<span class="params">value</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> [value, <span class="variable language_">this</span>.<span class="property">cont</span>]</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">const</span> context = &#123;<span class="attr">cont</span>: <span class="string">&#x27;test&#x27;</span>&#125;;            </span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">map</span>(func, context).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: [0, &#x27;test&#x27;] [1, &#x27;test&#x27;] [2, &#x27;test&#x27;]           </span></span><br></pre></td></tr></table></figure>
+
+<p><strong>pluck</strong> : 将上游的数据按字段取出。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(&#123;<span class="attr">name</span>: <span class="string">&#x27;mark&#x27;</span>&#125;).<span class="title function_">pluck</span>(<span class="string">&#x27;name&#x27;</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: mark</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>windowTime, bufferTime</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">      <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">windowTime</span>(<span class="number">2000</span>).<span class="title function_">subscribe</span>(<span class="function"><span class="params">v</span> =&gt;</span> v.<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>));</span><br><span class="line"><span class="comment">// output: 1,2,3,4...</span></span><br><span class="line"><span class="comment">// windowToggle //以source为数据源，第一个Observable为凭据，进行Toggle操作</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>window， buffer</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> source$ = <span class="title class_">Observable</span>.<span class="title function_">timer</span>(<span class="number">0</span>, <span class="number">100</span>);</span><br><span class="line"><span class="keyword">const</span> notifer$ = <span class="title class_">Observable</span>.<span class="title function_">timer</span>(<span class="number">400</span>, <span class="number">400</span>);</span><br><span class="line">source$.<span class="title function_">window</span>(notifer$);</span><br><span class="line"><span class="comment">// 每400毫秒产生一个Observable的窗口</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>concatMap, mergeMap, switchMap, exhaustMap</strong> </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">concatMap</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">100</span>).<span class="title function_">take</span>(<span class="number">3</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 012012012</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">mergeMap</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">100</span>).<span class="title function_">take</span>(<span class="number">3</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 001122</span></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>).<span class="title function_">switchMap</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">100</span>).<span class="title function_">take</span>(<span class="number">3</span>)).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 012</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>groupBy</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>).<span class="title function_">groupBy</span>(<span class="function"><span class="params">v</span> =&gt;</span> v %<span class="number">2</span> === <span class="number">0</span>).<span class="title function_">subscribe</span>(<span class="function">(<span class="params">v</span>) =&gt;</span> v.<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>));</span><br><span class="line"><span class="comment">// output: 2 , 4</span></span><br><span class="line"><span class="comment">// return Observable</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>scan</strong> ： 可以理解为可以持续传递数据的reduce</p>
+<p><strong>mergeScan</strong> ： 返回Observable的scan</p>
+<h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>操作符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>捕获上游的错误</td>
+<td>catch</td>
+</tr>
+<tr>
+<td>当上游产生错误时重试</td>
+<td>retry，retryWhen</td>
+</tr>
+<tr>
+<td>无论是否出错都要进行一些操作</td>
+<td>finally</td>
+</tr>
+</tbody></table>
+<p><strong>catch</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>).<span class="title function_">map</span>(<span class="function">(<span class="params">v</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">if</span>(v == <span class="number">4</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;test&#x27;</span>);</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> v;</span><br><span class="line">        &#125;).<span class="title function_">catch</span>(<span class="function">(<span class="params">err, caught$</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;test&quot;</span>, err);</span><br><span class="line">          <span class="keyword">return</span> caught$;</span><br><span class="line">        &#125;).<span class="title function_">take</span>(<span class="number">10</span>).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 1,2,3,Error: test</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>retry, retryWhen</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>).<span class="title function_">map</span>(<span class="function">(<span class="params">v</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">if</span>(v == <span class="number">4</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;test&#x27;</span>);</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> v;</span><br><span class="line">        &#125;).<span class="title function_">retry</span>(<span class="number">1</span>).<span class="title function_">catch</span>(<span class="function">(<span class="params">err, caught$</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">8</span>);</span><br><span class="line">        &#125;).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 1,2,3,1,2,3,8</span></span><br><span class="line"></span><br><span class="line"><span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>).<span class="title function_">map</span>(<span class="function">(<span class="params">v</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">if</span>(v == <span class="number">4</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(<span class="string">&#x27;test&#x27;</span>);</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">return</span> v;</span><br><span class="line">        &#125;).<span class="title function_">retryWhen</span>(err$ =&gt; <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">10</span>)).<span class="title function_">catch</span>(<span class="function">(<span class="params">err, caught$</span>) =&gt;</span> &#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="number">8</span>);</span><br><span class="line">        &#125;).<span class="title function_">subscribe</span>(<span class="variable language_">console</span>.<span class="property">log</span>);</span><br><span class="line"><span class="comment">// output: 123123123123123123123....</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>finally</strong> : 同Javascript的finally方法。</p>
+<h2 id="多播"><a href="#多播" class="headerlink" title="多播"></a>多播</h2><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>操作符</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>灵活选取Subject对象进行多播</td>
+<td>multicast</td>
+</tr>
+<tr>
+<td>只多播数据流中最后一个数据</td>
+<td>publishLast</td>
+</tr>
+<tr>
+<td>对数据流中给定数量的数据进行多播</td>
+<td>publishReplay</td>
+</tr>
+<tr>
+<td>拥有默认数据的多播</td>
+<td>publishBehavior</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>Cold Observable: 每次subscribe都产生一个全新的数据序列的数据流。</p>
+<p>Hot Observable： 真正的数据源与Observer没有关系，达到统一数据源的效果（fromEvent, fromPromise）。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> subject = <span class="keyword">new</span> <span class="title class_">Subject</span>();</span><br><span class="line"><span class="keyword">const</span> subjectTest = subject.<span class="title function_">subscribe</span>(<span class="function">(<span class="params">v</span>) =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;v1&#x27;</span>,v));</span><br><span class="line">subject.<span class="title function_">next</span>(<span class="number">1</span>);</span><br><span class="line">subject.<span class="title function_">subscribe</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;v2&#x27;</span>, v), <span class="literal">null</span>, <span class="function">()=&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;v2 complete&#x27;</span>));</span><br><span class="line">subject.<span class="title function_">next</span>(<span class="number">2</span>);</span><br><span class="line">subjectTest.<span class="title function_">unsubscribe</span>();</span><br><span class="line">subject.<span class="title function_">complete</span>();</span><br><span class="line"><span class="comment">// output: v1,1 v1,2 v2,2 v2complete</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>subject可以有多个数据源，起到的作用就是把多个数据源的内容汇总到一个Observable中去。</p>
+</blockquote>
+<p><strong>multicast</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> tick$ = <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">take</span>(<span class="number">10</span>);</span><br><span class="line"><span class="keyword">const</span> source = tick$.<span class="title function_">multicast</span>(<span class="keyword">new</span> <span class="title class_">Subject</span>()).<span class="title function_">refCount</span>();</span><br><span class="line">source.<span class="title function_">subscribe</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;v1&quot;</span>, v))</span><br><span class="line">source.<span class="title function_">subscribe</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;v2&quot;</span>, v))</span><br><span class="line"><span class="comment">// output: v1 0, v2 0 v1 1, v2 1....</span></span><br><span class="line"><span class="comment">// multicast产生的connectableObservable会去subscribe的Observable</span></span><br><span class="line"><span class="keyword">const</span> tick$ = <span class="title class_">Observable</span>.<span class="title function_">interval</span>(<span class="number">1000</span>).<span class="title function_">take</span>(<span class="number">2</span>);</span><br><span class="line"><span class="keyword">const</span> source = tick$.<span class="title function_">multicast</span>(<span class="keyword">new</span> <span class="title class_">Subject</span>(), <span class="function">(<span class="params">shared</span>) =&gt;</span> shared.<span class="title function_">concat</span>(<span class="title class_">Observable</span>.<span class="title function_">of</span>(<span class="string">&#x27;Done&#x27;</span>)))</span><br><span class="line">source.<span class="title function_">subscribe</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;I&#x27;m in v1&quot;</span>, v))</span><br><span class="line">source.<span class="title function_">subscribe</span>(<span class="function"><span class="params">v</span> =&gt;</span> <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;I&#x27;m in v&quot;</span>, v))</span><br><span class="line"><span class="comment">// I&#x27;m in v1 0</span></span><br><span class="line"><span class="comment">// I&#x27;m in v 0</span></span><br><span class="line"><span class="comment">// I&#x27;m in v1 0</span></span><br><span class="line"><span class="comment">// I&#x27;m in v 0</span></span><br><span class="line"><span class="comment">// I&#x27;m in v1 1</span></span><br><span class="line"><span class="comment">// I&#x27;m in v 1</span></span><br><span class="line"><span class="comment">// I&#x27;m in v1 Done</span></span><br><span class="line"><span class="comment">//&#x27;m in v Done</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>publish</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">publish</span> = (<span class="params">selector</span>) =&gt; &#123;</span><br><span class="line">    <span class="keyword">if</span>(selector)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="title function_">multicast</span>(<span class="keyword">new</span> <span class="title class_">Subject</span>(), selector)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="title function_">multicast</span>(<span class="keyword">new</span> <span class="title class_">Subject</span>())</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// publish实际是对multicast的封装</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>share</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> share = () &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">multicast</span>(<span class="function">() =&gt;</span> <span class="keyword">new</span> <span class="title class_">Subject</span>()).<span class="title function_">refcount</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// share也是对multicast的封装</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>publishLast，AsyncSubject</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">publishLast</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">multicast</span>.<span class="title function_">call</span>(<span class="variable language_">this</span>, <span class="keyword">new</span> <span class="title class_">AsyncSubject</span>())</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 由AsyncSubject封装的publishLast方法</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>publishReplay， replaySubject</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">publishReplay</span>(<span class="params">bufferSize = <span class="built_in">Number</span>.POSITIVE_INFINITY, windowTime = <span class="built_in">Number</span>.POSITIVE_INFINITY</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> multicast.<span class="title function_">call</span>(<span class="variable language_">this</span>, <span class="keyword">new</span> <span class="title class_">ReplaySubject</span>(bufferSize, windowTime))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>publishBehavior, BehaviorSubject</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">publishBehavior</span>(<span class="params">value</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> multicast.<span class="title function_">call</span>(<span class="variable language_">this</span>, <span class="keyword">new</span> <span class="title class_">BehaviorSubject</span>(value));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Scheduler"><a href="#Scheduler" class="headerlink" title="Scheduler"></a>Scheduler</h2><blockquote>
+<p>Scheduler 可以作为创造类和合并类操作符的函数使用，Rx还提供了observeOn和subscribeOn两个操作符，用于在管道任何位置插入Scheduler</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">console.log(&#x27;before&#x27;);</span><br><span class="line">Observable.range(1, 3).subscribeOn(asap).subscribe(console.log)</span><br><span class="line">console.log(&#x27;after&#x27;);</span><br><span class="line">// output: 1,2,3,before, after</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Rxjs-%E6%80%BB%E7%BB%93%EF%BC%88%E4%B8%80%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">Rxjs 总结（一）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6%E6%B1%87%E6%80%BB"><span class="toc-number">2.</span> <span class="toc-text">操作符汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E7%B1%BB%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.1.</span> <span class="toc-text">创建类操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80-%E5%88%9B%E5%BB%BA%E5%90%8C%E6%AD%A5%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">2.1.0.1.</span> <span class="toc-text">一. 创建同步数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C-%E5%88%9B%E5%BB%BA%E5%BC%82%E6%AD%A5%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">2.1.0.2.</span> <span class="toc-text">二. 创建异步数据流</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%89-%E6%8A%8A%E5%85%B6%E4%BB%96%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%8C%96%E4%B8%BAObservable"><span class="toc-number">2.1.0.3.</span> <span class="toc-text">三. 把其他类型的数据转化为Observable</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%9B-%E5%85%B6%E4%BB%96"><span class="toc-number">2.1.0.4.</span> <span class="toc-text">四. 其他</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%88%E5%B9%B6%E7%B1%BB%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.2.</span> <span class="toc-text">合并类操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BE%85%E5%8A%A9%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.3.</span> <span class="toc-text">辅助操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%87%E6%BB%A4%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="toc-number">2.4.</span> <span class="toc-text">过滤数据流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E5%8C%96%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-number">2.5.</span> <span class="toc-text">转化操作符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="toc-number">2.6.</span> <span class="toc-text">异常处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%92%AD"><span class="toc-number">2.7.</span> <span class="toc-text">多播</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Scheduler"><span class="toc-number">2.8.</span> <span class="toc-text">Scheduler</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://technologybook.tech/2017/09/09/RxjsSummary/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://technologybook.tech/2017/09/09/RxjsSummary/&text=Rxjs 总结"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://technologybook.tech/2017/09/09/RxjsSummary/&is_video=false&description=Rxjs 总结"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Rxjs 总结&body=Check out this article: https://technologybook.tech/2017/09/09/RxjsSummary/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://technologybook.tech/2017/09/09/RxjsSummary/&title=Rxjs 总结"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://technologybook.tech/2017/09/09/RxjsSummary/&name=Rxjs 总结&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://technologybook.tech/2017/09/09/RxjsSummary/&t=Rxjs 总结"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Mark Ma
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/VamKram">github</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
